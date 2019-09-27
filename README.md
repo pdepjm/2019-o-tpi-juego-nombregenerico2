@@ -1,8 +1,8 @@
-### Nombre del Juego
+### Nombre del Juego 
 
 ![capturaJuego](assets/bicho/0.png)
 
-#### Grupo: Nombre del Grupo
+#### Grupo: NombreGenerico2
 
 Integrantes:
 
