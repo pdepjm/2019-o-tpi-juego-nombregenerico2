@@ -1,15 +1,14 @@
 ### Nombre del Juego
 
-![capturaJuego](assets/capturaJuego.png)
+![capturaJuego](assets/bicho/0.png)
 
 #### Grupo: Nombre del Grupo
 
 Integrantes:
 
-- Juana Azurduy
-- Alicia Moreau
-- Joe Balachi
-- Benedict Arnold
+- Tomas Floxo 
+- Gaston Ramirez
+- Facundo Franco
 
 #### Descripción e instrucciones
 
