@@ -1,39 +1,50 @@
 import wollok.game.*
 
-object rana {
-	var property image = "rana/0.png"
-	var property position = game.at(5,0)
-}
+class Auto {
 
-object tronco{
-	var property image = "tronco/0.png"
-	var property position = game.at(5,3)
+	var property image
+	var property position
+	const velocidad // Tiempo en milisegundos que tarda en moverse de una celda a otra
 
-	method colisionarConRana(){
-		rana.position(rana.position().left(1))
-		game.onTick(200,"moverse",{position = position.left(1)})
-	}	
-}
-
-object bicho{
-	var property image = "bicho/0.png"
-	var property position = game.at(5,7)
-	
-	method colisionarConRana(){
+	method colisionarConRana() {
 		game.stop()
 	}
+
+	method empezarMovimiento() {
+		// TODO: Tienen que poder haber autos que vayan en el sentido opuesto.
+		const posicionY = position.y()
+		const posicionXMaxima = game.width() + 2 // Hasta donde puede llegar. Este '+2' no es algo estricto, se puede cambiar.
+		game.onTick(velocidad, "moverse auto", { if (self.position() == game.at(posicionXMaxima, posicionY)) {
+				self.position(game.at(0, posicionY))
+			} else self.position(self.position().right(1))
+		})
+	}
+
+}
+
+object rana {
+
+	var property image = "rana/0.png"
+	var property position = game.at(5, 0)
+
 }
 
 program game {
-
+	//Resolucion 700x800 con celdas de 50p
 	game.width(14)
-	game.height(16)
+	game.height(16) 
 	game.boardGround("fondo.png")
 	game.addVisualCharacter(rana)
-	game.addVisual(tronco)
-	game.addVisual(bicho)
-	game.onCollideDo(rana,{colisionador => colisionador.colisionarConRana()} )
-	
+		/*TODO: En la version final van a haber varios autos, pero si hay que hacer todo esto por cada auto, va a haber una masa de codigo de creacion de autos. 
+		 Si se puede hay que hacer que la creacion de todos los autos se haga en pocas lineas.*/
+		// ∨∨∨
+	const unAuto = new Auto(image = "autos/autoA/0.png", position = game.at(0, 2), velocidad = 200)
+	const otroAuto = new Auto(image = "autos/autoB/0.png", position = game.at(0, 5), velocidad = 50)
+	unAuto.empezarMovimiento()
+	otroAuto.empezarMovimiento()
+	game.addVisual(unAuto)
+	game.addVisual(otroAuto)
+		// ∧∧∧
+	game.onCollideDo(rana, { colisionador => colisionador.colisionarConRana() })
 	game.start()
-
 }
