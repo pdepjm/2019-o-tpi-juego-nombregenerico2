@@ -26,9 +26,9 @@ object bicho{
 
 program game {
 
-	game.width(10)
-	game.height(10)
-	
+	game.width(14)
+	game.height(16)
+	game.boardGround("fondo.png")
 	game.addVisualCharacter(rana)
 	game.addVisual(tronco)
 	game.addVisual(bicho)
