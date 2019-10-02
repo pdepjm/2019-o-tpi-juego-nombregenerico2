@@ -9,11 +9,10 @@ class Auto {
 	method colisionarConRana() {
 		game.stop()
 	}
-
 	method empezarMovimiento() {
 		// TODO: Tienen que poder haber autos que vayan en el sentido opuesto.
 		const posicionY = position.y()
-		const posicionXMaxima = game.width() + 2 // Hasta donde puede llegar. Este '+2' no es algo estricto, se puede cambiar.
+		const posicionXMaxima = game.width() + 5 // Hasta donde puede llegar. Este '+5' no es algo estricto, se puede cambiar.
 		game.onTick(velocidad, "moverse auto", { if (self.position() == game.at(posicionXMaxima, posicionY)) {
 				self.position(game.at(0, posicionY))
 			} else self.position(self.position().right(1))
@@ -26,24 +25,48 @@ object rana {
 
 	var property image = "rana/0.png"
 	var property position = game.at(5, 0)
+	
 
 }
 
+object tronco1{
+	var property image = "tronco/1.png"
+	var property position = game.at(13, 12)
+	const velocidad= 250
+	method empezarMovimiento() {
+		// TODO: Tienen que poder haber autos que vayan en el sentido opuesto.
+		const posicionY = position.y()
+		const posicionXMaxima = game.width() + 5 
+		game.onTick(velocidad, "moverse tronco", { if (self.position() == game.at(0, posicionY)) {
+				self.position(game.at(posicionXMaxima, posicionY))
+			} else self.position(self.position().left(1))
+		})
+	}
+	method colisionarConRana() {
+	game.onTick(1,"moverse rana",
+		{rana.position(self.position())
+	})
+		}
+}
 program game {
 	//Resolucion 700x800 con celdas de 50p
 	game.width(14)
 	game.height(16) 
 	game.boardGround("fondo.png")
-	game.addVisualCharacter(rana)
+	
 		/*TODO: En la version final van a haber varios autos, pero si hay que hacer todo esto por cada auto, va a haber una masa de codigo de creacion de autos. 
 		 Si se puede hay que hacer que la creacion de todos los autos se haga en pocas lineas.*/
 		// ∨∨∨
-	const unAuto = new Auto(image = "autos/autoA/0.png", position = game.at(0, 2), velocidad = 200)
-	const otroAuto = new Auto(image = "autos/autoB/0.png", position = game.at(0, 5), velocidad = 50)
-	unAuto.empezarMovimiento()
-	otroAuto.empezarMovimiento()
-	game.addVisual(unAuto)
-	game.addVisual(otroAuto)
+	const autoA1 = new Auto(image = "autos/autoA/0.png", position = game.at(0, 2), velocidad = 200)
+	const autoB1 = new Auto(image = "autos/autoB/0.png", position = game.at(0, 5), velocidad = 100)
+	const autoB2 = new Auto(image = "autos/autoB/0.png", position = game.at(-5, 5), velocidad = 100)
+	[autoA1,autoB2,autoB1,tronco1].forEach({obstaculo =>
+		game.addVisual(obstaculo)
+		obstaculo.empezarMovimiento()
+	})
+
+	game.addVisualCharacter(rana)
+	
 		// ∧∧∧
 	game.onCollideDo(rana, { colisionador => colisionador.colisionarConRana() })
 	game.start()
