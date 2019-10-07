@@ -1,108 +1,7 @@
 import wollok.game.*
+import actores.*
 
-class Animable {
 
-	var property image
-	var property position
-	var nombre // Identificador unico para el onTick
-	var estaAnimandose = false //Esto solo lo usa la rana, deberia tenerlo la clase?
-	var frame = 0
-
-	method animarse(carpetaImagenes, cantidadFrames, velocidad) {
-		estaAnimandose = true
-		game.onTick(velocidad, nombre, { frame++
-			image = carpetaImagenes + frame.toString() + ".png"
-			if (frame == cantidadFrames) {
-				estaAnimandose = false
-				frame = 0
-				image = carpetaImagenes + frame.toString() + ".png" //Se termina la animacion volviendo al primer frame de la carpeta
-				game.removeTickEvent(nombre)
-			}
-		})
-	}
-
-}
-
-class Movible inherits Animable {
-
-	const velocidad // Tiempo en milisegundos que tarda en moverse de una celda a otra
-	const limiteOffsetX = 5 // Cuantas celdas se mueve despues de dejar la pantalla
-
-	method empezarMovimientoDerecha() {
-		const posicionY = position.y()
-		game.onTick(velocidad, "moverse movible a derecha", { if (position == game.at(game.width() + limiteOffsetX, posicionY)) {
-				position = game.at(0, posicionY)
-			} else position = position.right(1)
-		})
-	}
-
-	method empezarMovimientoIzquierda() {
-		const posicionY = position.y()
-		game.onTick(velocidad, "moverse movible a izquierda", { if (position == game.at(-limiteOffsetX, posicionY)) {
-				position = game.at(game.width(), posicionY)
-			} else position = position.left(1)
-		})
-	}
-
-}
-
-class Auto inherits Movible {
-
-	method colisionarConRana() {
-		game.stop()
-	}
-
-}
-
-class Tronco inherits Movible {
-
-	method colisionarConRana() {
-		game.onTick(1, "moverse rana", { rana.position(position)})
-	}
-
-}
-
-object rana inherits Animable(image = "rana/up/0.png", position = game.at(5, 0), nombre = "rana") {
-
-	// Seria mejor sacar los metodos up, down, left y right y hacer que se reciba el tratarDeMoverseAPosicion directamente por el onPressDo?
-	method up() {
-		self.tratarDeMoverseAPosicion(position.up(1), "up")
-	}
-
-	method down() {
-		self.tratarDeMoverseAPosicion(position.down(1), "down")
-	}
-
-	method left() {
-		self.tratarDeMoverseAPosicion(position.left(1), "left")
-	}
-
-	method right() {
-		self.tratarDeMoverseAPosicion(position.right(1), "right")
-	}
-
-	method tratarDeMoverseAPosicion(posicionADondeMoverse, direccion) {
-		//Tecnicamente se puede deducir la direccion sabiendo cual es la proxima posicion, 
-		//pero vale la pena hacer el algoritmo cuando se puede pasar la direccion como parametro?
-		
-		if (!self.posicionEstaAfuera(posicionADondeMoverse) and !estaAnimandose) {
-			const framesDeMovimiento = 4
-			const velocidad = 0
-			const carpetaAnimacion = "rana/" + direccion + "/"
-			self.animarse(carpetaAnimacion, framesDeMovimiento, velocidad)
-			game.schedule(framesDeMovimiento * velocidad, { position = posicionADondeMoverse}) //Se cambia la posicion cuando termina la animacion			
-		}
-	}
-
-	method posicionEstaAfuera(posicion) { // Este metodo le deberia pertenecer a la rana?
-		const maximoX = game.width()
-		const maximoY = game.height()
-		const posicionX = posicion.x()
-		const posicionY = posicion.y()
-		return (posicionY < 0 or posicionX < 0) or (posicionX >= maximoX or posicionY >= maximoY)
-	}
-
-}
 
 program game {
 	// Resolucion 700x800 con celdas de 50p
@@ -112,9 +11,9 @@ program game {
 		/*TODO: En la version final van a haber varios autos, pero si hay que hacer todo esto por cada auto, va a haber una masa de codigo de creacion de autos. 
 		 Si se puede hay que hacer que la creacion de todos los autos se haga en pocas lineas.*/
 		// ∨∨∨
-	const autoA1 = new Auto(image = "autos/autoA/0.png", position = game.at(0, 2), velocidad = 200, nombre = "autoA1")
-	const autoB1 = new Auto(image = "autos/autoB/0.png", position = game.at(0, 5), velocidad = 100, nombre = "autoB1")
-	const autoB2 = new Auto(image = "autos/autoB/0.png", position = game.at(-5, 5), velocidad = 100, nombre = "autoB2")
+	const autoA1 = new Auto(image = "autos/autoA/0.png", position = game.at(0, 2), velocidad = 200)
+	const autoB1 = new Auto(image = "autos/autoB/0.png", position = game.at(0, 5), velocidad = 100)
+	const autoB2 = new Auto(image = "autos/autoB/0.png", position = game.at(-5, 5), velocidad = 100)
 	[ autoA1, autoB2, autoB1 ].forEach({ obstaculo =>
 		game.addVisual(obstaculo)
 		obstaculo.empezarMovimientoDerecha()
