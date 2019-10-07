@@ -2,28 +2,28 @@ import wollok.game.*
 import actores.*
 import clasesBase.*
 
-
-
 program game {
 	// Resolucion 700x800 con celdas de 50p
 	game.width(14)
 	game.height(16)
 	game.boardGround("fondo.png")
-		/*TODO: En la version final van a haber varios autos, pero si hay que hacer todo esto por cada auto, va a haber una masa de codigo de creacion de autos. 
-		 Si se puede hay que hacer que la creacion de todos los autos se haga en pocas lineas.*/
+		// TODO: De alguna forma hay que hacer mas corto el spawneo de cosas
 		// ∨∨∨
-	const autoA1 = new Obstaculo(image = "autos/autoA/0.png", position = game.at(0, 2), velocidad = 200)
+	const autoA1 = new Obstaculo(image = "autos/autoA/0.png", position = game.at(0, 2), velocidad = 100)
 	const autoB1 = new Obstaculo(image = "autos/autoB/0.png", position = game.at(0, 5), velocidad = 100)
 	const autoB2 = new Obstaculo(image = "autos/autoB/0.png", position = game.at(-5, 5), velocidad = 100)
 	[ autoA1, autoB2, autoB1 ].forEach({ obstaculo =>
 		game.addVisual(obstaculo)
 		obstaculo.empezarMovimientoDerecha()
 	})
-		// ∧∧∧
-	
-	const unTronco = new Subible(image = "tronco/2.png",position = game.at(3,9),velocidad = 500)
-	game.addVisual(unTronco)
-	unTronco.empezarMovimientoIzquierda()
+	const primerTronco = new Subible(image = "tronco/0.png", position = game.at(3, 9), velocidad = 500)
+	const segundoTronco = new Subible(image = "tronco/1.png", position = game.at(4, 9), velocidad = 500)
+	const tercerTronco = new Subible(image = "tronco/2.png", position = game.at(5, 9), velocidad = 500)
+	[ primerTronco, segundoTronco, tercerTronco ].forEach({ tronco =>
+		game.addVisual(tronco)
+		tronco.empezarMovimientoIzquierda()
+	})
+// ∧∧∧
 	game.addVisual(rana)
 	game.onCollideDo(rana, { colisionador => colisionador.colisionarConRana() })
 	keyboard.up().onPressDo({ rana.up() })

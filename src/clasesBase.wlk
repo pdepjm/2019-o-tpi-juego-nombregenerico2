@@ -52,7 +52,7 @@ class Subible inherits Movible { // Nombre horrible, hay que pensar otro
 			if (!rana.posicionEstaAfuera(position)) {
 				rana.position(position)
 			}
-		} else {
+		} else{
 			super()
 		}
 	}
@@ -66,7 +66,7 @@ class Subible inherits Movible { // Nombre horrible, hay que pensar otro
 class Obstaculo inherits Movible {
 
 	override method colisionarConRana() {
-		game.stop()
+		rana.morir()
 	}
 
 }
