@@ -1,5 +1,6 @@
 import wollok.game.*
 import actores.*
+import clasesBase.*
 
 
 
@@ -11,14 +12,18 @@ program game {
 		/*TODO: En la version final van a haber varios autos, pero si hay que hacer todo esto por cada auto, va a haber una masa de codigo de creacion de autos. 
 		 Si se puede hay que hacer que la creacion de todos los autos se haga en pocas lineas.*/
 		// ∨∨∨
-	const autoA1 = new Auto(image = "autos/autoA/0.png", position = game.at(0, 2), velocidad = 200)
-	const autoB1 = new Auto(image = "autos/autoB/0.png", position = game.at(0, 5), velocidad = 100)
-	const autoB2 = new Auto(image = "autos/autoB/0.png", position = game.at(-5, 5), velocidad = 100)
+	const autoA1 = new Obstaculo(image = "autos/autoA/0.png", position = game.at(0, 2), velocidad = 200)
+	const autoB1 = new Obstaculo(image = "autos/autoB/0.png", position = game.at(0, 5), velocidad = 100)
+	const autoB2 = new Obstaculo(image = "autos/autoB/0.png", position = game.at(-5, 5), velocidad = 100)
 	[ autoA1, autoB2, autoB1 ].forEach({ obstaculo =>
 		game.addVisual(obstaculo)
 		obstaculo.empezarMovimientoDerecha()
 	})
 		// ∧∧∧
+	
+	const unTronco = new Subible(image = "tronco/2.png",position = game.at(3,9),velocidad = 500)
+	game.addVisual(unTronco)
+	unTronco.empezarMovimientoIzquierda()
 	game.addVisual(rana)
 	game.onCollideDo(rana, { colisionador => colisionador.colisionarConRana() })
 	keyboard.up().onPressDo({ rana.up() })

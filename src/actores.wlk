@@ -1,22 +1,6 @@
 import clasesBase.*
 import wollok.game.*
 
-class Auto inherits Movible {
-
-	method colisionarConRana() {
-		game.stop()
-	}
-
-}
-
-class Tronco inherits Movible {
-
-	method colisionarConRana() { // TODO: Arreglar
-		game.onTick(1, "moverse rana", { rana.position(position)})
-	}
-
-}
-
 object rana {
 
 	var property image = "rana/up.png"
@@ -43,7 +27,7 @@ object rana {
 	method tratarDeMoverseAPosicion(posicionADondeMoverse, direccion) {
 		if (!self.posicionEstaAfuera(posicionADondeMoverse) and !estaMoviendose) {
 			estaMoviendose = true
-			game.schedule(20, { position = posicionADondeMoverse //El schedule es para hacer que el movimiento no sea tan rapido
+			game.schedule(0, { position = posicionADondeMoverse // El schedule es para hacer que el movimiento no sea tan rapido
 				estaMoviendose = false
 				image = "rana/" + direccion + ".png"
 			})

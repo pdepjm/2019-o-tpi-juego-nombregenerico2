@@ -1,4 +1,5 @@
 import wollok.game.*
+import actores.*
 
 class Movible {
 
@@ -25,6 +26,47 @@ class Movible {
 
 	method empezarMovimientoIzquierda() {
 		game.onTick(velocidad, "moverse movible a izquierda", { self.moverseALaIzquierda()})
+	}
+
+	method colisionarConRana() {
+	}
+
+}
+
+class Subible inherits Movible { // Nombre horrible, hay que pensar otro
+
+	override method moverseALaDerecha() {
+		if (self.estaColisionandoConRana()) {
+			super()
+			if (!rana.posicionEstaAfuera(position)) {
+				rana.position(position)
+			}
+		} else {
+			super()
+		}
+	}
+
+	override method moverseALaIzquierda() {
+		if (self.estaColisionandoConRana()) {
+			super()
+			if (!rana.posicionEstaAfuera(position)) {
+				rana.position(position)
+			}
+		} else {
+			super()
+		}
+	}
+
+	method estaColisionandoConRana() {
+		return game.colliders(self).contains(rana)
+	}
+
+}
+
+class Obstaculo inherits Movible {
+
+	override method colisionarConRana() {
+		game.stop()
 	}
 
 }
