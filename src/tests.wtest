@@ -1,6 +1,12 @@
+import wollok.game.*
+import actores.*
+import clasesBase.*
+describe "Colisiones" {
 
-test "¡sep, vale hacer tests también!" {
-
-	assert.that(false)
-
+test "la rana pierda una vida si la chocan"{
+	const autoA1 = new Obstaculo()
+	autoA1.colisionarConRana()
+	assert.equals(2,rana.vidas())
+	//  en este caso estaria bueno poder ver si comienza de nuevo en el mismo lugar
+	}
 }

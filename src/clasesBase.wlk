@@ -33,7 +33,7 @@ class Movible {
 
 }
 
-class Subible inherits Movible { // Nombre horrible, hay que pensar otro
+class Montable inherits Movible { // Nombre horrible, hay que pensar otro
 
 	override method moverseALaDerecha() {
 		if (self.estaColisionandoConRana()) {

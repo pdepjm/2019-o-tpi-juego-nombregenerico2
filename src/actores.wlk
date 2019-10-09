@@ -6,7 +6,7 @@ object rana {
 	const posicionInicial = game.at(5, 1)
 	var property image = "rana/up.png"
 	var property position = posicionInicial
-	var vidas = 3
+	var property vidas = 3
 
 	//TODO: Seria mejor sacar los metodos up, down, left y right y hacer que se reciba el tratarDeMoverseAPosicion directamente por el onPressDo?
 	method up() {

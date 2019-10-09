@@ -16,9 +16,9 @@ program game {
 		game.addVisual(obstaculo)
 		obstaculo.empezarMovimientoDerecha()
 	})
-	const primerTronco = new Subible(image = "tronco/0.png", position = game.at(3, 9), velocidad = 500)
-	const segundoTronco = new Subible(image = "tronco/1.png", position = game.at(4, 9), velocidad = 500)
-	const tercerTronco = new Subible(image = "tronco/2.png", position = game.at(5, 9), velocidad = 500)
+	const primerTronco = new Montable(image = "tronco/0.png", position = game.at(3, 9), velocidad = 500)
+	const segundoTronco = new Montable(image = "tronco/1.png", position = game.at(4, 9), velocidad = 500)
+	const tercerTronco = new Montable(image = "tronco/2.png", position = game.at(5, 9), velocidad = 500)
 	[ primerTronco, segundoTronco, tercerTronco ].forEach({ tronco =>
 		game.addVisual(tronco)
 		tronco.empezarMovimientoIzquierda()
