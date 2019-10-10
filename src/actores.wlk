@@ -8,7 +8,6 @@ object rana {
 	var property position = posicionInicial
 	var property vidas = 3
 
-	//TODO: Seria mejor sacar los metodos up, down, left y right y hacer que se reciba el tratarDeMoverseAPosicion directamente por el onPressDo?
 	method up() {
 		self.tratarDeMoverseAPosicion(position.up(1), "up")
 	}
@@ -32,7 +31,7 @@ object rana {
 		}
 	}
 
-	method posicionEstaAfuera(posicion) { //TODO: Este metodo le deberia pertenecer a la rana?
+	method posicionEstaAfuera(posicion) {
 		const maximoX = game.width()
 		const maximoY = game.height()
 		const minimoX = 0

@@ -1,31 +1,61 @@
 import wollok.game.*
 import actores.*
 
+class DireccionHorizontal {
+
+	const property limiteOffsetX = 5
+
+	method posicionXInicial()
+
+	method proximaPosicionDirecta(posicionActual)
+
+	method posicionEstaFuera(posicion) {
+		const minimoX = -limiteOffsetX
+		const maximoX = game.width() + limiteOffsetX
+		return !posicion.x().between(minimoX,maximoX)
+	}
+
+	method proximaPosicion(posicionActual) {
+		const proximaPosicionDirecta = self.proximaPosicionDirecta(posicionActual)
+		if (self.posicionEstaFuera(proximaPosicionDirecta)) {
+			return game.at(self.posicionXInicial(), posicionActual.y())
+		} else {
+			return proximaPosicionDirecta
+		}
+	}
+
+}
+
+object izquierda inherits DireccionHorizontal {
+
+	override method posicionXInicial() = game.width()
+
+	override method proximaPosicionDirecta(posicionActual) = posicionActual.left(1)
+
+}
+
+object derecha inherits DireccionHorizontal {
+
+	override method posicionXInicial() = 0
+
+	override method proximaPosicionDirecta(posicionActual) = posicionActual.right(1)
+
+}
+
 class Movible {
 
 	var property image
 	var property position
-	const velocidad // Tiempo en milisegundos que tarda en moverse de una celda a otra
 	const property limiteOffsetX = 5 // Cuantas celdas se mueve despues de dejar la pantalla
+	const velocidad // Tiempo en milisegundos que tarda en moverse de una celda a otra
+	const direccion
 
-	method moverseALaDerecha() {
-		if (position == game.at(game.width() + limiteOffsetX, position.y())) {
-			position = game.at(0, position.y())
-		} else position = position.right(1)
+	method moverse() {
+		position = direccion.proximaPosicion(position)
 	}
 
-	method moverseALaIzquierda() {
-		if (position == game.at(-limiteOffsetX, position.y())) {
-			position = game.at(game.width(), position.y())
-		} else position = position.left(1)
-	}
-
-	method empezarMovimientoDerecha() {
-		game.onTick(velocidad, "moverse movible a derecha", { self.moverseALaDerecha()})
-	}
-
-	method empezarMovimientoIzquierda() {
-		game.onTick(velocidad, "moverse movible a izquierda", { self.moverseALaIzquierda()})
+	method empezarMovimiento() {
+		game.onTick(velocidad, "moverse movible a derecha", { self.moverse()})
 	}
 
 	method colisionarConRana() {
@@ -35,24 +65,13 @@ class Movible {
 
 class Montable inherits Movible { // Nombre horrible, hay que pensar otro
 
-	override method moverseALaDerecha() {
+	override method moverse() {
 		if (self.estaColisionandoConRana()) {
 			super()
 			if (!rana.posicionEstaAfuera(position)) {
 				rana.position(position)
 			}
 		} else {
-			super()
-		}
-	}
-
-	override method moverseALaIzquierda() {
-		if (self.estaColisionandoConRana()) {
-			super()
-			if (!rana.posicionEstaAfuera(position)) {
-				rana.position(position)
-			}
-		} else{
 			super()
 		}
 	}

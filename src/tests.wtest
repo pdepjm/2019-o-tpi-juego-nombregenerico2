@@ -4,7 +4,7 @@ import clasesBase.*
 
 describe "Colisiones" {
 
-	const unMontable = new Montable(image = "tronco/2.png", position = game.at(0, 0), velocidad = 500)
+	const unMontable = new Montable(direccion = izquierda, image = "tronco/2.png", position = game.at(0, 0), velocidad = 500)
 	const autoA1 = new Obstaculo()
 
 	test "la rana pierda una vida si la chocan" {
@@ -22,7 +22,7 @@ describe "Colisiones" {
 		game.addVisual(unMontable)
 		game.addVisual(rana)
 		rana.position(posicionMontable)
-		unMontable.moverseALaIzquierda()
+		unMontable.moverse()
 		assert.equals(rana.position(), posicionMontable.left(1))
 	}
 
@@ -44,7 +44,7 @@ describe "Colisiones" {
 		const posicionMontableInicial = game.at(0, 0)
 		rana.position(posicionMontableInicial)
 		unMontable.position(posicionMontableInicial)
-		unMontable.moverseALaIzquierda()
+		unMontable.moverse()
 		assert.equals(rana.position(), posicionMontableInicial)
 	}
 
@@ -52,10 +52,10 @@ describe "Colisiones" {
 		game.width(14)
 		game.height(16)
 		game.addVisual(unMontable)
-		const posicionBorde = game.at(game.width() + unMontable.limiteOffsetX(), 0)
-		const posicionDeRetorno = game.at(0, 0)
+		const posicionBorde = game.at(0 - izquierda.limiteOffsetX(), 0)
+		const posicionDeRetorno = game.at(game.width(), 0)
 		unMontable.position(posicionBorde)
-		unMontable.moverseALaDerecha()
+		unMontable.moverse()
 		assert.equals(unMontable.position(), posicionDeRetorno)
 	}
 

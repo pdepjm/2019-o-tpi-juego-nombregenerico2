@@ -2,6 +2,11 @@ import wollok.game.*
 import actores.*
 import clasesBase.*
 
+object spawner{
+	
+	
+}
+
 program game {
 	// Resolucion 700x800 con celdas de 50p
 	game.width(14)
@@ -9,24 +14,24 @@ program game {
 	game.boardGround("fondo.png")
 		// TODO: De alguna forma hay que hacer mas corto el spawneo de cosas
 		// ∨∨∨
-	const autoA1 = new Obstaculo(image = "autos/autoA/0.png", position = game.at(0, 2), velocidad = 100)
-	const autoB1 = new Obstaculo(image = "autos/autoB/0.png", position = game.at(0, 5), velocidad = 100)
-	const autoB2 = new Obstaculo(image = "autos/autoB/0.png", position = game.at(-5, 5), velocidad = 100)
+	const autoA1 = new Obstaculo(image = "autos/autoA/0.png", position = game.at(0, 2), velocidad = 100, direccion = derecha)
+	const autoB1 = new Obstaculo(image = "autos/autoB/0.png", position = game.at(0, 5), velocidad = 100, direccion = izquierda)
+	const autoB2 = new Obstaculo(image = "autos/autoB/0.png", position = game.at(-5, 5), velocidad = 100, direccion = derecha)
 	[ autoA1, autoB2, autoB1 ].forEach({ obstaculo =>
 		game.addVisual(obstaculo)
-		obstaculo.empezarMovimientoDerecha()
+		obstaculo.empezarMovimiento()
 	})
-	const primerTronco = new Montable(image = "tronco/0.png", position = game.at(3, 9), velocidad = 500)
-	const segundoTronco = new Montable(image = "tronco/1.png", position = game.at(4, 9), velocidad = 500)
-	const tercerTronco = new Montable(image = "tronco/2.png", position = game.at(5, 9), velocidad = 500)
+	const primerTronco = new Montable(image = "tronco/0.png", position = game.at(3, 9), velocidad = 500, direccion = izquierda)
+	const segundoTronco = new Montable(image = "tronco/1.png", position = game.at(4, 9), velocidad = 500, direccion = izquierda)
+	const tercerTronco = new Montable(image = "tronco/2.png", position = game.at(5, 9), velocidad = 500, direccion = izquierda)
 	[ primerTronco, segundoTronco, tercerTronco ].forEach({ tronco =>
 		game.addVisual(tronco)
-		tronco.empezarMovimientoIzquierda()
+		tronco.empezarMovimiento()
 	})
 // ∧∧∧
 	game.addVisual(rana)
 	game.onCollideDo(rana, { colisionador => colisionador.colisionarConRana() })
-	keyboard.up().onPressDo({ rana.up() })
+	keyboard.up().onPressDo({ rana.up()})
 	keyboard.down().onPressDo({ rana.down() })
 	keyboard.right().onPressDo({ rana.right() })
 	keyboard.left().onPressDo({ rana.left() })
