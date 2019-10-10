@@ -6,7 +6,7 @@ class Movible {
 	var property image
 	var property position
 	const velocidad // Tiempo en milisegundos que tarda en moverse de una celda a otra
-	const limiteOffsetX = 5 // Cuantas celdas se mueve despues de dejar la pantalla
+	const property limiteOffsetX = 5 // Cuantas celdas se mueve despues de dejar la pantalla
 
 	method moverseALaDerecha() {
 		if (position == game.at(game.width() + limiteOffsetX, position.y())) {

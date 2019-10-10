@@ -1,12 +1,72 @@
 import wollok.game.*
 import actores.*
 import clasesBase.*
+
 describe "Colisiones" {
 
-test "la rana pierda una vida si la chocan"{
+	const unMontable = new Montable(image = "tronco/2.png", position = game.at(0, 0), velocidad = 500)
 	const autoA1 = new Obstaculo()
-	autoA1.colisionarConRana()
-	assert.equals(2,rana.vidas())
-	//  en este caso estaria bueno poder ver si comienza de nuevo en el mismo lugar
+
+	test "la rana pierda una vida si la chocan" {
+		const vidasIniciales = rana.vidas()
+		autoA1.colisionarConRana()
+		assert.equals(rana.vidas(), vidasIniciales - 1)
+	// en este caso estaria bueno poder ver si comienza de nuevo en el mismo lugar
 	}
+
+	test "Un montable mueve a la rana si esta colisionando con ella y moviendose" {
+		const posicionMontable = game.at(3, 3)
+		unMontable.position(posicionMontable)
+		game.width(14)
+		game.height(16)
+		game.addVisual(unMontable)
+		game.addVisual(rana)
+		rana.position(posicionMontable)
+		unMontable.moverseALaIzquierda()
+		assert.equals(rana.position(), posicionMontable.left(1))
+	}
+
+	test "Rana no se puede salir del tablero al tratar de moverse por si sola" {
+		game.width(14)
+		game.height(16)
+		game.addVisual(rana)
+		const posicionInicial = game.at(0, 0)
+		rana.position(posicionInicial)
+		rana.left()
+		assert.equals(rana.position(), posicionInicial)
+	}
+
+	test "Un montable no puede sacar a la rana del tablero al moverse con ella" {
+		game.width(14)
+		game.height(16)
+		game.addVisual(unMontable)
+		game.addVisual(rana)
+		const posicionMontableInicial = game.at(0, 0)
+		rana.position(posicionMontableInicial)
+		unMontable.position(posicionMontableInicial)
+		unMontable.moverseALaIzquierda()
+		assert.equals(rana.position(), posicionMontableInicial)
+	}
+
+	test "Un movible vuelve al principio al superar el offset del tablero" {
+		game.width(14)
+		game.height(16)
+		game.addVisual(unMontable)
+		const posicionBorde = game.at(game.width() + unMontable.limiteOffsetX(), 0)
+		const posicionDeRetorno = game.at(0, 0)
+		unMontable.position(posicionBorde)
+		unMontable.moverseALaDerecha()
+		assert.equals(unMontable.position(), posicionDeRetorno)
+	}
+
+	test "Al morir la rana vuelve a la posicion inicial" {
+		game.width(14)
+		game.height(16)
+		game.addVisual(rana)
+		rana.position(game.at(-4, 2))
+		rana.morir()
+		assert.equals(rana.position(), rana.posicionInicial())
+	}
+
 }
+

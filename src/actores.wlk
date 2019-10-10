@@ -3,7 +3,7 @@ import wollok.game.*
 
 object rana {
 
-	const posicionInicial = game.at(5, 1)
+	const property posicionInicial = game.at(5, 1)
 	var property image = "rana/up.png"
 	var property position = posicionInicial
 	var property vidas = 3
