@@ -1,33 +1,27 @@
 import clasesBase.*
 import wollok.game.*
 
-object rana {
+class Rana {
 
-	const property posicionInicial = game.at(5, 1)
-	var property image = "rana/up.png"
-	var property position = posicionInicial
+	const property posicionInicial = game.at(2, 1)
+	var property position = game.at(2, 1)
 	var property vidas = 3
+	var direccion = arriba
+	const nombreSprite
+	var property otraRana // TODO: Otra alternativa?
 
-	method up() {
-		self.tratarDeMoverseAPosicion(position.up(1), "up")
-	}
+	method image() = nombreSprite + "/" + direccion.nombre() + ".png"
 
-	method down() {
-		self.tratarDeMoverseAPosicion(position.down(1), "down")
-	}
+	method laOtraRanaEstaEnPosicion(posicion) = game.getObjectsIn(posicion).contains(otraRana)
 
-	method left() {
-		self.tratarDeMoverseAPosicion(position.left(1), "left")
-	}
-
-	method right() {
-		self.tratarDeMoverseAPosicion(position.right(1), "right")
-	}
-
-	method tratarDeMoverseAPosicion(posicionADondeMoverse, direccion) {
-		if (!self.posicionEstaAfuera(posicionADondeMoverse)) {
+	method tratarDeMoverseEnDireccion(direccionAMoverse) {
+		const posicionADondeMoverse = direccionAMoverse.proximaPosicionDirecta(position)
+		direccion = direccionAMoverse
+		if (self.laOtraRanaEstaEnPosicion(posicionADondeMoverse)) {
+			otraRana.tratarDeMoverseEnDireccion(direccionAMoverse)
+		}
+		if (!self.posicionEstaAfuera(posicionADondeMoverse) and !self.laOtraRanaEstaEnPosicion(posicionADondeMoverse)) {
 			position = posicionADondeMoverse
-			image = "rana/" + direccion + ".png"
 		}
 	}
 
@@ -45,15 +39,39 @@ object rana {
 		if (vidas != 0) {
 			vidas--
 				// TODO: Aca hacer la animacion de la muerte
-			image = "rana/up.png"
+			direccion = arriba
 			position = posicionInicial
 		} else {
 			game.stop()
 		}
-	} /*TODO: Tiene que haber una contador visual de vidas, entonces tiene que haber un objeto que minimamente
+	}
+
+	/*TODO: Tiene que haber una contador visual de vidas, entonces tiene que haber un objeto que minimamente
 	 * represente visualmente las vidas. Pero si vamos a hacer un objeto de vidas, no tendriamos
 	 * que hacer ese objeto maneje las vidas en vez de la rana? Para pensar.
 	 */
+	method colisionarConUnaRana(unaRana) {
+		// TODO: eh
+		game.sound("croak.mp3")
+	}
+
+}
+
+class Tronco inherits Montable {
+
+	const proximoTronco
+
+	override method moverse() {
+		super()
+		proximoTronco.moverse()
+	}
+
+}
+
+object troncoNulo {
+
+	method moverse() {
+	}
 
 }
 

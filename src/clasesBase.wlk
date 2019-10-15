@@ -1,21 +1,28 @@
 import wollok.game.*
 import actores.*
 
-class DireccionHorizontal {
+class Direccion {
 
-	const property limiteOffsetX = 5
-
-	method posicionXInicial()
+	const property nombre
 
 	method proximaPosicionDirecta(posicionActual)
+
+}
+
+class DireccionHorizontal inherits Direccion { //Juro que todo lo que hay aca tiene una justificacion
+
+	const property limiteOffsetX = 5
+	const property opuesto
+
+	method posicionXInicial()
 
 	method posicionEstaFuera(posicion) {
 		const minimoX = -limiteOffsetX
 		const maximoX = game.width() + limiteOffsetX
-		return !posicion.x().between(minimoX,maximoX)
+		return !posicion.x().between(minimoX, maximoX)
 	}
 
-	method proximaPosicion(posicionActual) {
+	method proximaPosicionValida(posicionActual) {
 		const proximaPosicionDirecta = self.proximaPosicionDirecta(posicionActual)
 		if (self.posicionEstaFuera(proximaPosicionDirecta)) {
 			return game.at(self.posicionXInicial(), posicionActual.y())
@@ -23,22 +30,38 @@ class DireccionHorizontal {
 			return proximaPosicionDirecta
 		}
 	}
+	
+	method posicionADistanciaDirecta(posicionActual,distancia) 
+	
+	override method proximaPosicionDirecta(posicionActual) = self.posicionADistanciaDirecta(posicionActual,1) 
 
 }
 
-object izquierda inherits DireccionHorizontal {
+object izquierda inherits DireccionHorizontal (nombre = "left",opuesto = derecha) {
 
 	override method posicionXInicial() = game.width()
 
-	override method proximaPosicionDirecta(posicionActual) = posicionActual.left(1)
+	override method posicionADistanciaDirecta(posicionActual,distancia) = posicionActual.left(distancia)
 
 }
 
-object derecha inherits DireccionHorizontal {
+object derecha inherits DireccionHorizontal (nombre = "right", opuesto = izquierda) {
 
 	override method posicionXInicial() = 0
 
-	override method proximaPosicionDirecta(posicionActual) = posicionActual.right(1)
+	override method posicionADistanciaDirecta(posicionActual,distancia) = posicionActual.right(distancia)
+
+}
+
+object arriba inherits Direccion (nombre = "up") {
+
+	override method proximaPosicionDirecta(posicionActual) = posicionActual.up(1)
+
+}
+
+object abajo inherits Direccion (nombre = "down") {
+
+	override method proximaPosicionDirecta(posicionActual) = posicionActual.down(1)
 
 }
 
@@ -51,41 +74,47 @@ class Movible {
 	const direccion
 
 	method moverse() {
-		position = direccion.proximaPosicion(position)
+		position = direccion.proximaPosicionValida(position)
 	}
 
-	method empezarMovimiento() {
+	method empezarMovimientoConstante() {
 		game.onTick(velocidad, "moverse movible a derecha", { self.moverse()})
 	}
 
-	method colisionarConRana() {
+	method colisionarConUnaRana(unaRana) {
 	}
 
 }
 
-class Montable inherits Movible { // Nombre horrible, hay que pensar otro
+class Montable inherits Movible {
+
+	var ultimoColisionado = null
 
 	override method moverse() {
-		if (self.estaColisionandoConRana()) {
+		if (self.estaColisionandoConElUltimoColisionado()) {
 			super()
-			if (!rana.posicionEstaAfuera(position)) {
-				rana.position(position)
+			if (!ultimoColisionado.posicionEstaAfuera(position)) {
+				ultimoColisionado.position(position)
 			}
 		} else {
 			super()
 		}
 	}
 
-	method estaColisionandoConRana() {
-		return game.colliders(self).contains(rana)
+	method estaColisionandoConElUltimoColisionado() {
+		return game.colliders(self).contains(ultimoColisionado)
+	}
+
+	override method colisionarConUnaRana(unaRana) {
+		ultimoColisionado = unaRana
 	}
 
 }
 
 class Obstaculo inherits Movible {
 
-	override method colisionarConRana() {
-		rana.morir()
+	override method colisionarConUnaRana(unaRana) {
+		unaRana.morir()
 	}
 
 }

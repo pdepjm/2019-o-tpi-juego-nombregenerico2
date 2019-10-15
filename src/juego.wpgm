@@ -2,9 +2,33 @@ import wollok.game.*
 import actores.*
 import clasesBase.*
 
-object spawner{
-	
-	
+object spawner {
+
+	method spawnearTronco(posicionInicial, velocidadTronco, direccionTronco) {
+		const imagenPrimerTronco = "tronco/" + direccionTronco.nombre() + ".png"
+		const imagenUltimoTronco = "tronco/" + direccionTronco.opuesto().nombre() + ".png"
+		const tercerTronco = new Tronco(image = imagenUltimoTronco, position = direccionTronco.posicionADistanciaDirecta(posicionInicial, -2), velocidad = 0, direccion = direccionTronco, proximoTronco = troncoNulo)
+		const segundoTronco = new Tronco(image = "tronco/body.png", position = direccionTronco.posicionADistanciaDirecta(posicionInicial, -1), velocidad = 0, direccion = direccionTronco, proximoTronco = tercerTronco)
+		const primerTronco = new Tronco(image = imagenPrimerTronco, position = posicionInicial, velocidad = velocidadTronco, direccion = direccionTronco, proximoTronco = segundoTronco)
+		[ tercerTronco, segundoTronco, primerTronco ].forEach({ tronco => game.addVisual(tronco)})
+		primerTronco.empezarMovimientoConstante()
+	}
+
+	method spawnearFilaDeAutos(cantidadAutos, fila, velocidadAutos, direccionAutos, distanciaEntreAutos) { // TODO: Los autos se desincronizan, tal vez se puede hacer como los troncos? Eso tal vez haria necesaria la clase de seguidor o algo
+		var ultimaPosicionDeAuto = game.at(0, fila)
+		const autos = []
+		const numeroRandomDeSpriteAuto = [ 1, 2, 3, 4 ].anyOne().toString()
+		const spriteAuto = "autos/auto" + numeroRandomDeSpriteAuto + "/" + direccionAutos.nombre() + ".png"
+		cantidadAutos.times({ _ =>
+			autos.add(new Obstaculo(image = spriteAuto, position = ultimaPosicionDeAuto, velocidad = velocidadAutos, direccion = direccionAutos))
+			ultimaPosicionDeAuto = ultimaPosicionDeAuto.right(distanciaEntreAutos)
+		})
+		autos.forEach({ auto =>
+			game.addVisual(auto)
+			auto.empezarMovimientoConstante()
+		})
+	}
+
 }
 
 program game {
@@ -12,28 +36,23 @@ program game {
 	game.width(14)
 	game.height(16)
 	game.boardGround("fondo.png")
-		// TODO: De alguna forma hay que hacer mas corto el spawneo de cosas
-		// ∨∨∨
-	const autoA1 = new Obstaculo(image = "autos/autoA/0.png", position = game.at(0, 2), velocidad = 100, direccion = derecha)
-	const autoB1 = new Obstaculo(image = "autos/autoB/0.png", position = game.at(0, 5), velocidad = 100, direccion = izquierda)
-	const autoB2 = new Obstaculo(image = "autos/autoB/0.png", position = game.at(-5, 5), velocidad = 100, direccion = derecha)
-	[ autoA1, autoB2, autoB1 ].forEach({ obstaculo =>
-		game.addVisual(obstaculo)
-		obstaculo.empezarMovimiento()
-	})
-	const primerTronco = new Montable(image = "tronco/0.png", position = game.at(3, 9), velocidad = 500, direccion = izquierda)
-	const segundoTronco = new Montable(image = "tronco/1.png", position = game.at(4, 9), velocidad = 500, direccion = izquierda)
-	const tercerTronco = new Montable(image = "tronco/2.png", position = game.at(5, 9), velocidad = 500, direccion = izquierda)
-	[ primerTronco, segundoTronco, tercerTronco ].forEach({ tronco =>
-		game.addVisual(tronco)
-		tronco.empezarMovimiento()
-	})
-// ∧∧∧
-	game.addVisual(rana)
-	game.onCollideDo(rana, { colisionador => colisionador.colisionarConRana() })
-	keyboard.up().onPressDo({ rana.up()})
-	keyboard.down().onPressDo({ rana.down() })
-	keyboard.right().onPressDo({ rana.right() })
-	keyboard.left().onPressDo({ rana.left() })
+	spawner.spawnearTronco(game.at(3, 9), 500, izquierda)
+	spawner.spawnearTronco(game.at(4, 10), 250, derecha)
+	spawner.spawnearFilaDeAutos(5, 3, 100, derecha, 4)
+	const rana2P = new Rana(nombreSprite = "rana2P", posicionInicial = game.at(11, 1), position = game.at(11, 1), otraRana = null) //TODO: Medio HORRIBLE
+	const rana1P = new Rana(nombreSprite = "rana", otraRana = rana2P)
+	rana2P.otraRana(rana1P)
+	game.addVisual(rana1P)
+	game.addVisual(rana2P)
+	game.onCollideDo(rana2P, { colisionador => colisionador.colisionarConUnaRana(rana2P) })
+	game.onCollideDo(rana1P, { colisionador => colisionador.colisionarConUnaRana(rana1P) })
+	keyboard.up().onPressDo({ rana1P.tratarDeMoverseEnDireccion(arriba) })
+	keyboard.down().onPressDo({ rana1P.tratarDeMoverseEnDireccion(abajo) })
+	keyboard.right().onPressDo({ rana1P.tratarDeMoverseEnDireccion(derecha) })
+	keyboard.left().onPressDo({ rana1P.tratarDeMoverseEnDireccion(izquierda) })
+	keyboard.w().onPressDo({ rana2P.tratarDeMoverseEnDireccion(arriba) })
+	keyboard.s().onPressDo({ rana2P.tratarDeMoverseEnDireccion(abajo) })
+	keyboard.d().onPressDo({ rana2P.tratarDeMoverseEnDireccion(derecha) })
+	keyboard.a().onPressDo({ rana2P.tratarDeMoverseEnDireccion(izquierda) })
 	game.start()
 }

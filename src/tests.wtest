@@ -6,11 +6,12 @@ describe "Colisiones" {
 
 	const unMontable = new Montable(direccion = izquierda, image = "tronco/2.png", position = game.at(0, 0), velocidad = 500)
 	const autoA1 = new Obstaculo()
+	const rana1P = new Rana(posicionInicial = game.at(5, 1), nombreSprite = "rana",otraRana = rana1P)
 
 	test "la rana pierda una vida si la chocan" {
-		const vidasIniciales = rana.vidas()
-		autoA1.colisionarConRana()
-		assert.equals(rana.vidas(), vidasIniciales - 1)
+		const vidasIniciales = rana1P.vidas()
+		autoA1.colisionarConUnaRana(rana1P)
+		assert.equals(rana1P.vidas(), vidasIniciales - 1)
 	// en este caso estaria bueno poder ver si comienza de nuevo en el mismo lugar
 	}
 
@@ -20,32 +21,32 @@ describe "Colisiones" {
 		game.width(14)
 		game.height(16)
 		game.addVisual(unMontable)
-		game.addVisual(rana)
-		rana.position(posicionMontable)
+		game.addVisual(rana1P)
+		rana1P.position(posicionMontable)
 		unMontable.moverse()
-		assert.equals(rana.position(), posicionMontable.left(1))
+		assert.equals(rana1P.position(), posicionMontable.left(1))
 	}
 
 	test "Rana no se puede salir del tablero al tratar de moverse por si sola" {
 		game.width(14)
 		game.height(16)
-		game.addVisual(rana)
+		game.addVisual(rana1P)
 		const posicionInicial = game.at(0, 0)
-		rana.position(posicionInicial)
-		rana.left()
-		assert.equals(rana.position(), posicionInicial)
+		rana1P.position(posicionInicial)
+		rana1P.left()
+		assert.equals(rana1P.position(), posicionInicial)
 	}
 
 	test "Un montable no puede sacar a la rana del tablero al moverse con ella" {
 		game.width(14)
 		game.height(16)
 		game.addVisual(unMontable)
-		game.addVisual(rana)
+		game.addVisual(rana1P)
 		const posicionMontableInicial = game.at(0, 0)
-		rana.position(posicionMontableInicial)
+		rana1P.position(posicionMontableInicial)
 		unMontable.position(posicionMontableInicial)
 		unMontable.moverse()
-		assert.equals(rana.position(), posicionMontableInicial)
+		assert.equals(rana1P.position(), posicionMontableInicial)
 	}
 
 	test "Un movible vuelve al principio al superar el offset del tablero" {
@@ -62,10 +63,10 @@ describe "Colisiones" {
 	test "Al morir la rana vuelve a la posicion inicial" {
 		game.width(14)
 		game.height(16)
-		game.addVisual(rana)
-		rana.position(game.at(-4, 2))
-		rana.morir()
-		assert.equals(rana.position(), rana.posicionInicial())
+		game.addVisual(rana1P)
+		rana1P.position(game.at(-4, 2))
+		rana1P.morir()
+		assert.equals(rana1P.position(), rana1P.posicionInicial())
 	}
 
 }
