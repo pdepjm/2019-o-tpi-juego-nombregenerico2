@@ -72,6 +72,5 @@ object troncoNulo {
 
 	method moverse() {
 	}
-
 }
 
