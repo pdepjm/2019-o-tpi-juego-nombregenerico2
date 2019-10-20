@@ -13,8 +13,7 @@ class DireccionHorizontal inherits Direccion { //Juro que todo lo que hay aca ti
 
 	const property limiteOffsetX = 5
 	const property opuesto
-
-	method posicionXInicial()
+	const posicionXInicial
 
 	method posicionEstaFuera(posicion) {
 		const minimoX = -limiteOffsetX
@@ -25,31 +24,27 @@ class DireccionHorizontal inherits Direccion { //Juro que todo lo que hay aca ti
 	method proximaPosicionValida(posicionActual) {
 		const proximaPosicionDirecta = self.proximaPosicionDirecta(posicionActual)
 		if (self.posicionEstaFuera(proximaPosicionDirecta)) {
-			return game.at(self.posicionXInicial(), posicionActual.y())
+			return game.at(posicionXInicial, posicionActual.y())
 		} else {
 			return proximaPosicionDirecta
 		}
 	}
-	
-	method posicionADistanciaDirecta(posicionActual,distancia) 
-	
-	override method proximaPosicionDirecta(posicionActual) = self.posicionADistanciaDirecta(posicionActual,1) 
+
+	method posicionADistanciaDirecta(posicionActual, distancia)
+
+	override method proximaPosicionDirecta(posicionActual) = self.posicionADistanciaDirecta(posicionActual, 1)
 
 }
 
-object izquierda inherits DireccionHorizontal (nombre = "left",opuesto = derecha) {
+object izquierda inherits DireccionHorizontal (posicionXInicial = game.width(), nombre = "left", opuesto = derecha) {
 
-	override method posicionXInicial() = game.width()
-
-	override method posicionADistanciaDirecta(posicionActual,distancia) = posicionActual.left(distancia)
+	override method posicionADistanciaDirecta(posicionActual, distancia) = posicionActual.left(distancia)
 
 }
 
-object derecha inherits DireccionHorizontal (nombre = "right", opuesto = izquierda) {
+object derecha inherits DireccionHorizontal (posicionXInicial = 0, nombre = "right", opuesto = izquierda) {
 
-	override method posicionXInicial() = 0
-
-	override method posicionADistanciaDirecta(posicionActual,distancia) = posicionActual.right(distancia)
+	override method posicionADistanciaDirecta(posicionActual, distancia) = posicionActual.right(distancia)
 
 }
 
@@ -84,29 +79,28 @@ class Movible {
 	method colisionarConUnaRana(unaRana) {
 	}
 
+	method empujarse(_) {
+	}
+
 }
 
 class Montable inherits Movible {
 
-	var ultimoColisionado = null
+	var ultimoRanaColisionada = null
 
 	override method moverse() {
 		if (self.estaColisionandoConElUltimoColisionado()) {
-			super()
-			if (!ultimoColisionado.posicionEstaAfuera(position)) {
-				ultimoColisionado.position(position)
-			}
-		} else {
-			super()
+			ultimoRanaColisionada.cambiarPosicionForzado(direccion.proximaPosicionValida(position))
 		}
+		super()
 	}
 
 	method estaColisionandoConElUltimoColisionado() {
-		return game.colliders(self).contains(ultimoColisionado)
+		return game.colliders(self).contains(ultimoRanaColisionada)
 	}
 
 	override method colisionarConUnaRana(unaRana) {
-		ultimoColisionado = unaRana
+			ultimoRanaColisionada = unaRana
 	}
 
 }
