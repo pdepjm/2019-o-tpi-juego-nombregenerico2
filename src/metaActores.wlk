@@ -65,9 +65,13 @@ object worldManager {
 		spawner.spawnearFilaDeTroncos(2, 10, 400, izquierda, 12)
 		spawner.spawnearFilaDeTroncos(1, 11, 500, derecha, 0)
 		spawner.spawnearFilaDeTroncos(1, 12, 600, izquierda, 0)
-		spawner.spawnearFilaDeAutos(1, 3, 100, derecha, 4)
+		spawner.spawnearFilaDeAutos(3, 3, 100, derecha, 4)
+		spawner.spawnearFilaDeAutos(2, 5, 300, izquierda, 2)
+		spawner.spawnearFilaDeAutos(1, 4, 50, izquierda, 2)
 		const rana2P = new Rana(nombreSprite = "rana2P", posicionInicial = game.at(11, 1), position = game.at(11, 1), otraRana = null) // TODO: Medio HORRIBLE
 		const rana1P = new Rana(nombreSprite = "rana", otraRana = rana2P)
+		victoryManager.agregarRana(rana2P)
+		victoryManager.agregarRana(rana1P)
 		rana2P.otraRana(rana1P)
 		game.addVisual(rana1P)
 		game.addVisual(rana2P)
@@ -81,13 +85,62 @@ object worldManager {
 		keyboard.s().onPressDo({ rana2P.tratarDeMoverseEnDireccion(abajo)})
 		keyboard.d().onPressDo({ rana2P.tratarDeMoverseEnDireccion(derecha)})
 		keyboard.a().onPressDo({ rana2P.tratarDeMoverseEnDireccion(izquierda)})
-		keyboard.backspace().onPressDo({self.reiniciarMundo()}) //The secret key
+		keyboard.backspace().onPressDo({ self.reiniciarMundo()}) // The secret key
+		
 	}
-	
-	
-	method reiniciarMundo(){
+
+	method reiniciarMundo() {
 		game.clear()
 		self.inicializarMundo()
 	}
 
 }
+
+object ranaNula {
+
+	const property puntos = 0
+
+	method ganarDefinitivo() {
+	}
+
+}
+
+object victoryManager {
+
+	const ranas = []
+
+	method puntosDeRanas() = ranas.map({ unaRana => unaRana.puntos() })
+
+	method ranaQueVaGanando() {
+		// Tal vez hay una forma mejor
+		const puntosMaximos = self.puntosDeRanas().max()
+		if (self.puntosDeRanas().occurrencesOf(puntosMaximos) > 1) { // Si hay un empate no gana ninguno
+			return ranaNula
+		} else {
+			return ranas.max({ unaRana => unaRana.puntos() })
+		}
+	}
+
+	method checkearVictoria() { // Si se cumplen las condiciones usuales para victoria, se realiza
+		const cantidadMetas = 4
+		const puntosNecesariosParaGanar = 3
+		const metasOcupadas = self.puntosDeRanas().sum()
+		const puntosDelQueVaGanando = self.ranaQueVaGanando().puntos()
+		if (puntosDelQueVaGanando >= puntosNecesariosParaGanar or metasOcupadas == cantidadMetas) { // Si el que va ganando tiene suficentes para ganar o no hay mas metas libres
+			self.victoriaParaElQueVaGanando()
+		}
+	}
+
+	method victoriaParaElQueVaGanando() {
+		self.ranaQueVaGanando().ganarDefinitivo()
+		ranas.clear()
+		worldManager.reiniciarMundo()
+		
+	}
+
+	method agregarRana(unaRana) {
+		ranas.add(unaRana)
+	}
+
+}
+
