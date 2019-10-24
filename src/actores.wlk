@@ -13,7 +13,6 @@ class Rana {
 	const property nombreSprite
 	var direccion = arriba
 	
-
 	method image() = nombreSprite + "/" + direccion.nombre() + ".png"
 
 	method laOtraRanaEstaEnPosicion(posicion) = game.getObjectsIn(posicion).contains(otraRana)

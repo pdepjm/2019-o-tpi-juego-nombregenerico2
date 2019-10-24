@@ -110,6 +110,5 @@ class Obstaculo inherits Movible {
 	override method colisionarConUnaRana(unaRana) {
 		unaRana.morir()
 	}
-
 }
 
