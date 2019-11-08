@@ -6,8 +6,8 @@ describe "Colisiones" {
 
 	const unMontable = new Montable(direccion = izquierda, image = "tronco/2.png", position = game.at(0, 0), velocidad = 500)
 	const autoA1 = new Obstaculo()
-	const rana1P = new Rana(posicionInicial = game.at(5, 1), nombreSprite = "rana",otraRana = rana1P)
-	const rana2P = new Rana(nombreSprite = "rana2", otraRana = rana1P)	
+	const rana1P = new Rana(posicionInicial = game.at(5, 1), nombreSprite = "rana")
+	const rana2P = new Rana(nombreSprite = "rana2")	
 
 	test "la rana pierda una vida si la chocan" {
 		const vidasIniciales = rana1P.vidas()

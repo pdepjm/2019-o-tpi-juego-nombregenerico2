@@ -8,43 +8,30 @@ class Rana {
 	var property position = game.at(2, 1)
 	var property vidas = 3
 	var property puntos = 0
-	var property otraRana // TODO: Otra alternativa?
 	const property posicionInicial = game.at(2, 1)
 	const property nombreSprite
 	var direccion = arriba
 	
-
 	method image() = nombreSprite + "/" + direccion.nombre() + ".png"
 
-	method laOtraRanaEstaEnPosicion(posicion) = game.getObjectsIn(posicion).contains(otraRana)
+	method empujarATodosEnUnaPosicion(posicion,direccionEnLaQueEmpujar){
+		game.getObjectsIn(posicion).forEach({unElemento => unElemento.empujarse(direccionEnLaQueEmpujar)})
+	}
+	
+	method posicionEsAtravesable(posicion) = (game.getObjectsIn(posicion)).all({unElemento => unElemento.esAtravesable()})
 
 	method tratarDeMoverseEnDireccion(direccionAMoverse) {
 		direccion = direccionAMoverse
 		const posicionADondeMoverse = direccionAMoverse.proximaPosicionDirecta(position)
-		if (self.laOtraRanaEstaEnPosicion(posicionADondeMoverse)) {
-			otraRana.tratarDeMoverseEnDireccion(direccionAMoverse)
-		}
-		if (!self.posicionEstaAfuera(posicionADondeMoverse) and !self.laOtraRanaEstaEnPosicion(posicionADondeMoverse)) {
+		self.empujarATodosEnUnaPosicion(posicionADondeMoverse,direccionAMoverse)
+		if(self.posicionEsAtravesable(posicionADondeMoverse)){
 			position = posicionADondeMoverse
 		}
+		
 	}
 
 	method cambiarPosicionForzado(posicion) { // TODO: cambiar nombre
-		if (!self.posicionEstaAfuera(posicion)) {
 			position = posicion
-		} else {
-			self.morir()
-		}
-	}
-
-	method posicionEstaAfuera(posicion) {
-		const maximoX = game.width()
-		const maximoY = game.height()
-		const minimoX = 0
-		const minimoY = 1
-		const posicionX = posicion.x()
-		const posicionY = posicion.y()
-		return (posicionY < minimoY or posicionX < minimoX) or (posicionX >= maximoX or posicionY >= maximoY)
 	}
 
 	method volverAlInicio() {
@@ -75,12 +62,15 @@ class Rana {
 		game.sound("croak.mp3")
 	}
 
-	method empujarse(posicionASerEmpujado) {
+	method empujarse(direccionEnLaQueEmpujar) {
+		self.tratarDeMoverseEnDireccion(direccionEnLaQueEmpujar)
 	}
 	
 	method ganarDefinitivo(){
 		
 	}
+	
+	method esAtravesable() = false
 
 }
 
@@ -105,6 +95,10 @@ class Agua {
 			unaRana.morir()
 		}
 	}
+	method empujarse(_){
+		
+	}
+	method esAtravesable() = true
 
 }
 
@@ -125,6 +119,16 @@ class Meta {
 		}
 	}
 
+}
+
+class BarreraLimite{
+	const property position
+	const property image = "nada.png"
+	
+	method esAtravesable() = false
+	method empujarse(_){
+		
+	}
 }
 
 object troncoNulo {

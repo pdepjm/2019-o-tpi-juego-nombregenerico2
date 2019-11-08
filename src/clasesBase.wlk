@@ -1,16 +1,7 @@
 import wollok.game.*
 import actores.*
 
-class Direccion {
-
-	const property nombre
-
-	method proximaPosicionDirecta(posicionActual)
-
-}
-
-class DireccionHorizontal inherits Direccion { //Juro que todo lo que hay aca tiene una justificacion
-
+class DireccionHorizontal{ //Juro que todo lo que hay aca tiene una justificacion
 	const property limiteOffsetX = 5
 	const property opuesto
 	const posicionXInicial
@@ -29,34 +20,37 @@ class DireccionHorizontal inherits Direccion { //Juro que todo lo que hay aca ti
 			return proximaPosicionDirecta
 		}
 	}
-
+	method proximaPosicionDirecta(posicionActual) = self.posicionADistanciaDirecta(posicionActual, 1)
+	
 	method posicionADistanciaDirecta(posicionActual, distancia)
+	method nombre()
 
-	override method proximaPosicionDirecta(posicionActual) = self.posicionADistanciaDirecta(posicionActual, 1)
+	
 
 }
 
-object izquierda inherits DireccionHorizontal (posicionXInicial = game.width(), nombre = "left", opuesto = derecha) {
-
+object izquierda inherits DireccionHorizontal (posicionXInicial = game.width(), opuesto = derecha) {
+	
+	override method nombre() = "left"
 	override method posicionADistanciaDirecta(posicionActual, distancia) = posicionActual.left(distancia)
 
 }
 
-object derecha inherits DireccionHorizontal (posicionXInicial = 0, nombre = "right", opuesto = izquierda) {
-
+object derecha inherits DireccionHorizontal (posicionXInicial = 0, opuesto = izquierda) {
+	override method nombre() = "right"
 	override method posicionADistanciaDirecta(posicionActual, distancia) = posicionActual.right(distancia)
 
 }
 
-object arriba inherits Direccion (nombre = "up") {
-
-	override method proximaPosicionDirecta(posicionActual) = posicionActual.up(1)
+object arriba{
+	method nombre() = "up"
+	method proximaPosicionDirecta(posicionActual) = posicionActual.up(1)
 
 }
 
-object abajo inherits Direccion (nombre = "down") {
-
-	override method proximaPosicionDirecta(posicionActual) = posicionActual.down(1)
+object abajo {
+	method nombre() = "down"
+	method proximaPosicionDirecta(posicionActual) = posicionActual.down(1)
 
 }
 
@@ -81,6 +75,7 @@ class Movible {
 
 	method empujarse(_) {
 	}
+	method esAtravesable() = true
 
 }
 

@@ -48,10 +48,25 @@ object spawner {
 		const fila = 13
 		columnas.forEach({ columna => game.addVisual(new Meta(position = game.at(columna, fila)))})
 	}
+	
+	method spawnearBarrerasLimite(){
+		const filas = 0 .. 14
+		const columnas = -1 .. 15
+		
+		filas.forEach({fila => 
+			game.addVisual(new BarreraLimite(position = game.at(-1,fila)))
+			game.addVisual(new BarreraLimite(position = game.at(14,fila)))
+			})
+		
+		columnas.forEach({columna => game.addVisual(new BarreraLimite(position = game.at(columna,0)))})
+	
+		
+	}
 
 	method spawnearEscenciales() {
 		self.spawnearAgua()
 		self.spawnearMetas()
+		self.spawnearBarrerasLimite()
 	}
 
 }
@@ -68,11 +83,10 @@ object worldManager {
 		spawner.spawnearFilaDeAutos(3, 3, 100, derecha, 4)
 		spawner.spawnearFilaDeAutos(2, 5, 300, izquierda, 2)
 		spawner.spawnearFilaDeAutos(1, 4, 50, izquierda, 2)
-		const rana2P = new Rana(nombreSprite = "rana2P", posicionInicial = game.at(11, 1), position = game.at(11, 1), otraRana = null) // TODO: Medio HORRIBLE
-		const rana1P = new Rana(nombreSprite = "rana", otraRana = rana2P)
+		const rana2P = new Rana(nombreSprite = "rana2P", posicionInicial = game.at(11, 1), position = game.at(11, 1)) // TODO: Medio HORRIBLE
+		const rana1P = new Rana(nombreSprite = "rana")
 		victoryManager.agregarRana(rana2P)
 		victoryManager.agregarRana(rana1P)
-		rana2P.otraRana(rana1P)
 		game.addVisual(rana1P)
 		game.addVisual(rana2P)
 		game.onCollideDo(rana2P, { colisionador => colisionador.colisionarConUnaRana(rana2P)})
