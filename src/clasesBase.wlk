@@ -24,6 +24,9 @@ class DireccionHorizontal{ //Juro que todo lo que hay aca tiene una justificacio
 	
 	method posicionADistanciaDirecta(posicionActual, distancia)
 	method nombre()
+
+	
+
 }
 
 object izquierda inherits DireccionHorizontal (posicionXInicial = game.width(), opuesto = derecha) {
