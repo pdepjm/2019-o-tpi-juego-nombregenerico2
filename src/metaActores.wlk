@@ -59,8 +59,6 @@ object spawner {
 			})
 		
 		columnas.forEach({columna => game.addVisual(new BarreraLimite(position = game.at(columna,0)))})
-	
-		
 	}
 
 	method spawnearEscenciales() {
@@ -68,10 +66,9 @@ object spawner {
 		self.spawnearMetas()
 		self.spawnearBarrerasLimite()
 	}
-
 }
 
-object worldManager {
+object mundo {
 
 	method inicializarMundo() {
 		spawner.spawnearEscenciales()
@@ -85,8 +82,8 @@ object worldManager {
 		spawner.spawnearFilaDeAutos(1, 4, 50, izquierda, 2)
 		const rana2P = new Rana(nombreSprite = "rana2P", posicionInicial = game.at(11, 1), position = game.at(11, 1)) // TODO: Medio HORRIBLE
 		const rana1P = new Rana(nombreSprite = "rana")
-		victoryManager.agregarRana(rana2P)
-		victoryManager.agregarRana(rana1P)
+		victoria.agregarRana(rana2P)
+		victoria.agregarRana(rana1P)
 		game.addVisual(rana1P)
 		game.addVisual(rana2P)
 		game.onCollideDo(rana2P, { colisionador => colisionador.colisionarConUnaRana(rana2P)})
@@ -100,7 +97,6 @@ object worldManager {
 		keyboard.d().onPressDo({ rana2P.tratarDeMoverseEnDireccion(derecha)})
 		keyboard.a().onPressDo({ rana2P.tratarDeMoverseEnDireccion(izquierda)})
 		keyboard.backspace().onPressDo({ self.reiniciarMundo()}) // The secret key
-		
 	}
 
 	method reiniciarMundo() {
@@ -119,21 +115,19 @@ object ranaNula {
 
 }
 
-object victoryManager {
+object victoria {
 
 	const ranas = []
 
+	method ranas() = ranas
+
 	method puntosDeRanas() = ranas.map({ unaRana => unaRana.puntos() })
 
-	method ranaQueVaGanando() {
-		// Tal vez hay una forma mejor
-		const puntosMaximos = self.puntosDeRanas().max()
-		if (self.puntosDeRanas().occurrencesOf(puntosMaximos) > 1) { // Si hay un empate no gana ninguno
-			return ranaNula
-		} else {
-			return ranas.max({ unaRana => unaRana.puntos() })
-		}
-	}
+	method ranaQueVaGanando() = 
+		if (self.puntosDeRanas().occurrencesOf(self.puntosDeRanas().max()) > 1)  // Si hay un empate no gana ninguno
+			ranaNula
+		else
+			ranas.max({unaRana => unaRana.puntos() })
 
 	method checkearVictoria() { // Si se cumplen las condiciones usuales para victoria, se realiza
 		const cantidadMetas = 4
@@ -148,13 +142,11 @@ object victoryManager {
 	method victoriaParaElQueVaGanando() {
 		self.ranaQueVaGanando().ganarDefinitivo()
 		ranas.clear()
-		worldManager.reiniciarMundo()
-		
+		mundo.reiniciarMundo()	
 	}
 
 	method agregarRana(unaRana) {
 		ranas.add(unaRana)
 	}
-
 }
 

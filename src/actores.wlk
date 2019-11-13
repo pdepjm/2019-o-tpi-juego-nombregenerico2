@@ -3,8 +3,6 @@ import wollok.game.*
 import metaActores.*
 
 class Rana {
-
-	
 	var property position = game.at(2, 1)
 	var property vidas = 3
 	var property puntos = 0
@@ -27,16 +25,15 @@ class Rana {
 		if(self.posicionEsAtravesable(posicionADondeMoverse)){
 			position = posicionADondeMoverse
 		}
-		
-	}
-
-	method cambiarPosicionForzado(posicion) { // TODO: cambiar nombre
-			position = posicion
 	}
 
 	method volverAlInicio() {
 		direccion = arriba
 		position = posicionInicial
+	}
+
+	method cambiarPosicionForzado(posicion) { // TODO: cambiar nombre
+			position = posicion
 	}
 
 	method morir() {
@@ -71,7 +68,6 @@ class Rana {
 	}
 	
 	method esAtravesable() = false
-
 }
 
 class Tronco inherits Montable {
@@ -113,7 +109,7 @@ class Meta {
 			image = unaRana.nombreSprite() + "/" + "bigBoy" + ".png"
 			unaRana.ganar()
 			puntoEstaTomado = true
-			victoryManager.checkearVictoria()
+			victoria.checkearVictoria()
 		}else{
 			unaRana.morir()
 		}

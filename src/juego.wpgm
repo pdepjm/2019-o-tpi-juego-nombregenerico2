@@ -9,6 +9,6 @@ program game {
 	game.width(14)
 	game.height(16)
 	game.boardGround("fondo.png")
-	worldManager.inicializarMundo()
+	mundo.inicializarMundo()
 	game.start()
 }

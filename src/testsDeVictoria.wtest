@@ -1,0 +1,26 @@
+import metaActores.*
+import actores.*
+
+describe "test de victoria" {
+	
+	const rana1P = new Rana(nombreSprite = "rana")
+	const rana2P = new Rana(nombreSprite = "rana")
+	
+	fixture {
+		victoria.agregarRana(rana1P)
+		victoria.agregarRana(rana2P)
+	}
+	
+	test "empate de 2 ranas" {	
+		assert.equals(ranaNula, victoria.ranaQueVaGanando())
+	}
+	
+	test "rana1P gana a rana2P" {
+		rana1P.ganar()
+		assert.equals(rana1P, victoria.ranaQueVaGanando())
+	}
+	
+	test "checkear victoria" {
+		assert.throwsException({victoria1 => victoria1.checkearVictoria()})
+	}
+}
