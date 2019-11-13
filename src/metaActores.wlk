@@ -83,8 +83,8 @@ object worldManager {
 		spawner.spawnearFilaDeAutos(3, 3, 100, derecha, 4)
 		spawner.spawnearFilaDeAutos(2, 5, 300, izquierda, 2)
 		spawner.spawnearFilaDeAutos(1, 4, 50, izquierda, 2)
-		const rana2P = new Rana(nombreSprite = "rana2P", posicionInicial = game.at(11, 1), position = game.at(11, 1)) // TODO: Medio HORRIBLE
-		const rana1P = new Rana(nombreSprite = "rana")
+		const rana1P = new Rana(nombreSprite = "rana",image = "rana/up.png")
+		const rana2P = new Rana(nombreSprite = "rana2P", posicionInicial = game.at(11, 1), position = game.at(11, 1),image = "rana2P/up.png")
 		victoryManager.agregarRana(rana2P)
 		victoryManager.agregarRana(rana1P)
 		game.addVisual(rana1P)
@@ -110,46 +110,75 @@ object worldManager {
 
 }
 
-object ranaNula {
-
-	const property puntos = 0
-
-	method ganarDefinitivo() {
+object victoriaEstandar{ // Hay victoria si hay una rana con suficientes puntos para ganar directo
+	method hayVictoria(){
+		return victoryManager.algunaRanaGano()
 	}
+}
 
+object victoriaPorPuntosRestantes{ // Si no quedan ranas vivas, hay alguna victoria (asumiendo que no hay empate)
+	method hayVictoria(){
+		return victoryManager.ranasVivas().size() == 0
+	}
+}
+
+
+object victoriaPorDefault{ // Si queda una rana viva y tiene mas puntos que la(s) muerta(s), hay victoria.
+	method hayVictoria(){
+		const ranasVivas = victoryManager.ranasVivas()
+		if (ranasVivas.size() == 1){
+			const unicaRanaViva = ranasVivas.anyOne()
+			return unicaRanaViva == victoryManager.ranaPuntera() // Si la rana es puntera, hay victoria. Si no, no deberia parar el juego.
+		}
+		else{
+			return false
+		}
+	}
 }
 
 object victoryManager {
 
 	const ranas = []
+	
+	const puntosNecesariosParaGanar= 3
+	
+	method ranaEsGanadoraDefinitiva(unaRana) = unaRana.puntos() >= puntosNecesariosParaGanar
+	
+	method ranaPuntera() = ranas.max({unaRana => unaRana.puntos()}) // Se asume que no hay empate
+	
+	method algunaRanaGano() = ranas.any({unaRana => self.ranaEsGanadoraDefinitiva(unaRana)})
 
 	method puntosDeRanas() = ranas.map({ unaRana => unaRana.puntos() })
-
-	method ranaQueVaGanando() {
-		// Tal vez hay una forma mejor
+	
+	method vanEmpatando() {
 		const puntosMaximos = self.puntosDeRanas().max()
-		if (self.puntosDeRanas().occurrencesOf(puntosMaximos) > 1) { // Si hay un empate no gana ninguno
-			return ranaNula
-		} else {
-			return ranas.max({ unaRana => unaRana.puntos() })
-		}
+		return self.puntosDeRanas().occurrencesOf(puntosMaximos) > 1 //Osea si la cantidad maxima de puntos aparece mas de 1 vez, es que hay 2 ranas empatando
+		//Igualmente no es como que si alguna vez van a haber mas de 2 ranas pero ok.
 	}
 
-	method checkearVictoria() { // Si se cumplen las condiciones usuales para victoria, se realiza
-		const cantidadMetas = 4
-		const puntosNecesariosParaGanar = 3
-		const metasOcupadas = self.puntosDeRanas().sum()
-		const puntosDelQueVaGanando = self.ranaQueVaGanando().puntos()
-		if (puntosDelQueVaGanando >= puntosNecesariosParaGanar or metasOcupadas == cantidadMetas) { // Si el que va ganando tiene suficentes para ganar o no hay mas metas libres
-			self.victoriaParaElQueVaGanando()
-		}
-	}
+	method ranasVivas() = ranas.filter({ unaRana => unaRana.estaViva()})
 
-	method victoriaParaElQueVaGanando() {
-		self.ranaQueVaGanando().ganarDefinitivo()
-		ranas.clear()
-		worldManager.reiniciarMundo()
+	method hayAlgunaVictoria(){
 		
+		if(!self.vanEmpatando()){
+		const metodosDeVictoria = [victoriaEstandar,victoriaPorDefault,victoriaPorPuntosRestantes]
+		return metodosDeVictoria.any({unMetodo => unMetodo.hayVictoria()})
+		}
+		else{
+			return false
+		}
+
+	}
+
+	method checkearVictoria() { 
+		if(self.hayAlgunaVictoria()){
+			self.victoriaParaRanaPuntera()
+		}
+	}
+	
+	method victoriaParaRanaPuntera() {
+		self.ranaPuntera().ganarDefinitivo()
+		ranas.clear()
 	}
 
 	method agregarRana(unaRana) {

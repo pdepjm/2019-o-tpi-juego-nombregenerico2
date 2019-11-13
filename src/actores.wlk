@@ -10,9 +10,7 @@ class Rana {
 	var property puntos = 0
 	const property posicionInicial = game.at(2, 1)
 	const property nombreSprite
-	var direccion = arriba
-	
-	method image() = nombreSprite + "/" + direccion.nombre() + ".png"
+	var property image
 
 	method empujarATodosEnUnaPosicion(posicion,direccionEnLaQueEmpujar){
 		game.getObjectsIn(posicion).forEach({unElemento => unElemento.empujarse(direccionEnLaQueEmpujar)})
@@ -21,7 +19,7 @@ class Rana {
 	method posicionEsAtravesable(posicion) = (game.getObjectsIn(posicion)).all({unElemento => unElemento.esAtravesable()})
 
 	method tratarDeMoverseEnDireccion(direccionAMoverse) {
-		direccion = direccionAMoverse
+		self.cambiarImagenSegunDireccion(direccionAMoverse)
 		const posicionADondeMoverse = direccionAMoverse.proximaPosicionDirecta(position)
 		self.empujarATodosEnUnaPosicion(posicionADondeMoverse,direccionAMoverse)
 		if(self.posicionEsAtravesable(posicionADondeMoverse)){
@@ -35,7 +33,7 @@ class Rana {
 	}
 
 	method volverAlInicio() {
-		direccion = arriba
+		self.cambiarImagenSegunDireccion(arriba)
 		position = posicionInicial
 	}
 
@@ -45,12 +43,20 @@ class Rana {
 				// TODO: Aca hacer la animacion de la muerte
 			self.volverAlInicio()
 		} else {
-			game.stop()
+			self.morirDefinitivo()
 		}
 	}
+	
+	method morirDefinitivo(){
+		victoryManager.checkearVictoria()
+		image = "tronco/body.png"
+	}
+	
+	method estaViva() = vidas > 0
 
 	method ganar() {
 		puntos++
+		victoryManager.checkearVictoria()
 		self.volverAlInicio()
 	}
 
@@ -67,12 +73,16 @@ class Rana {
 	}
 	
 	method ganarDefinitivo(){
-		
+		worldManager.reiniciarMundo()
 	}
 	
 	method esAtravesable() = false
 
 	method spriteMeta() = nombreSprite + "/bigBoy.png"
+	
+	method cambiarImagenSegunDireccion(direccion){
+		image = nombreSprite + "/" + direccion.nombre() + ".png"
+	}
 }
 
 class Tronco inherits Montable {
@@ -92,7 +102,7 @@ class Agua {
 	const property image = "nada.png"
 
 	method colisionarConUnaRana(unaRana) {
-		if (game.getObjectsIn(position).size() == 2) { // TODO: por favor hacer esto de una forma no horrible. Ahora se checkea que si al colisionar solo hay 2 cosas (rana y agua) 
+		if (game.getObjectsIn(position).size() == 2) { // Si hay mas de 2 cosas es que hay un tronco :)
 			unaRana.morir()
 		}
 	}
