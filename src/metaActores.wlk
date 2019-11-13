@@ -71,7 +71,7 @@ object spawner {
 
 }
 
-object worldManager {
+object generadorDelMundo {
 
 	method inicializarMundo() {
 		spawner.spawnearEscenciales()
@@ -85,8 +85,8 @@ object worldManager {
 		spawner.spawnearFilaDeAutos(1, 4, 50, izquierda, 2)
 		const rana1P = new Rana(nombreSprite = "rana",image = "rana/up.png")
 		const rana2P = new Rana(nombreSprite = "rana2P", posicionInicial = game.at(11, 1), position = game.at(11, 1),image = "rana2P/up.png")
-		victoryManager.agregarRana(rana2P)
-		victoryManager.agregarRana(rana1P)
+		controladorDeVictorias.agregarRana(rana2P)
+		controladorDeVictorias.agregarRana(rana1P)
 		game.addVisual(rana1P)
 		game.addVisual(rana2P)
 		game.onCollideDo(rana2P, { colisionador => colisionador.colisionarConUnaRana(rana2P)})
@@ -112,23 +112,23 @@ object worldManager {
 
 object victoriaEstandar{ // Hay victoria si hay una rana con suficientes puntos para ganar directo
 	method hayVictoria(){
-		return victoryManager.algunaRanaGano()
+		return controladorDeVictorias.algunaRanaGano()
 	}
 }
 
 object victoriaPorPuntosRestantes{ // Si no quedan ranas vivas, hay alguna victoria (asumiendo que no hay empate)
 	method hayVictoria(){
-		return victoryManager.ranasVivas().size() == 0
+		return controladorDeVictorias.ranasVivas().size() == 0
 	}
 }
 
 
 object victoriaPorDefault{ // Si queda una rana viva y tiene mas puntos que la(s) muerta(s), hay victoria.
 	method hayVictoria(){
-		const ranasVivas = victoryManager.ranasVivas()
+		const ranasVivas = controladorDeVictorias.ranasVivas()
 		if (ranasVivas.size() == 1){
 			const unicaRanaViva = ranasVivas.anyOne()
-			return unicaRanaViva == victoryManager.ranaPuntera() // Si la rana es puntera, hay victoria. Si no, no deberia parar el juego.
+			return unicaRanaViva == controladorDeVictorias.ranaPuntera() // Si la rana es puntera, hay victoria. Si no, no deberia parar el juego.
 		}
 		else{
 			return false
@@ -136,7 +136,7 @@ object victoriaPorDefault{ // Si queda una rana viva y tiene mas puntos que la(s
 	}
 }
 
-object victoryManager {
+object controladorDeVictorias {
 
 	const ranas = []
 	

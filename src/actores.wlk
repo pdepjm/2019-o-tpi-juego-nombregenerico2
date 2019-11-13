@@ -48,7 +48,7 @@ class Rana {
 	}
 	
 	method morirDefinitivo(){
-		victoryManager.checkearVictoria()
+		controladorDeVictorias.checkearVictoria()
 		image = "tronco/body.png"
 	}
 	
@@ -56,7 +56,7 @@ class Rana {
 
 	method ganar() {
 		puntos++
-		victoryManager.checkearVictoria()
+		controladorDeVictorias.checkearVictoria()
 		self.volverAlInicio()
 	}
 
@@ -73,7 +73,7 @@ class Rana {
 	}
 	
 	method ganarDefinitivo(){
-		worldManager.reiniciarMundo()
+		generadorDelMundo.reiniciarMundo()
 	}
 	
 	method esAtravesable() = false
@@ -116,7 +116,7 @@ class Agua {
 object metaLibre{
 	method actuarPorRanaEnMeta(meta,unaRana){
 		unaRana.ganar()
-		victoryManager.checkearVictoria()
+		controladorDeVictorias.checkearVictoria()
 		meta.ocuparsePorRana(unaRana)
 	}
 }
