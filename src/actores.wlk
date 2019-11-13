@@ -72,6 +72,7 @@ class Rana {
 	
 	method esAtravesable() = false
 
+	method spriteMeta() = nombreSprite + "/bigBoy.png"
 }
 
 class Tronco inherits Montable {
@@ -102,22 +103,40 @@ class Agua {
 
 }
 
+object metaLibre{
+	method actuarPorRanaEnMeta(meta,unaRana){
+		unaRana.ganar()
+		victoryManager.checkearVictoria()
+		meta.ocuparsePorRana(unaRana)
+	}
+}
+object metaOcupada{
+	method actuarPorRanaEnMeta(_,unaRana){
+		unaRana.morir()
+	}
+	
+}
+
 class Meta {
 
 	const property position
 	var property image = "nada.png"
-	var puntoEstaTomado = false
+	var estadoOcupado = metaLibre
 
 	method colisionarConUnaRana(unaRana) {
-		if (!puntoEstaTomado) {
-			image = unaRana.nombreSprite() + "/" + "bigBoy" + ".png"
-			unaRana.ganar()
-			puntoEstaTomado = true
-			victoryManager.checkearVictoria()
-		}else{
-			unaRana.morir()
-		}
+		estadoOcupado.actuarPorRanaEnMeta(self,unaRana)
 	}
+
+	method ocuparsePorRana(unaRana){
+		image = unaRana.spriteMeta()
+		estadoOcupado = metaOcupada
+	}
+	
+	method esAtravesable() = true
+	method empujarse(_){
+		
+	}
+	
 
 }
 
