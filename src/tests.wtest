@@ -2,36 +2,75 @@ import wollok.game.*
 import actores.*
 import clasesBase.*
 
-describe "Empuje de las ranas"{
-		const rana1P = new Rana(nombreSprite = "rana", image = "rana/up.png",  representacionVidas = new RepresentacionDeVidas(posicionBase = game.at(0,0),direccionVidas = derecha))
-		const rana2P = new Rana(nombreSprite = "rana2P", image = "rana2P/up.png", representacionVidas = new RepresentacionDeVidas(posicionBase = game.at(13,0),direccionVidas = izquierda))
-		const posicionObstaculo = game.at(6,6)
-		const obstaculo = new Obstaculo(image = "nada.png", position = posicionObstaculo, direccion = derecha,frameDeMovimiento = 1)
-		const posicionBarrera = game.at(3,3)
-		const barrera = new BarreraLimite(position = posicionBarrera)
-		fixture{
-			game.addVisual(rana1P)
-			game.addVisual(rana2P)
-			game.addVisual(obstaculo)
-			game.addVisual(barrera)
-			rana1P.inicializarRepresentacionDeVidas()
-			rana2P.inicializarRepresentacionDeVidas()
+describe "Empuje de las ranas" {
+
+	const posicionRespawn = game.at(9,9)
+	const rana1P = new Rana(nombreSprite = "rana", posicionInicial = posicionRespawn, image = "rana/up.png", representacionVidas = new RepresentacionDeVidas(posicionBase = game.at(0, 0), direccionVidas = derecha))
+	const rana2P = new Rana(nombreSprite = "rana2P", image = "rana2P/up.png", representacionVidas = new RepresentacionDeVidas(posicionBase = game.at(13, 0), direccionVidas = izquierda))
+	const posicionObstaculo = game.at(6, 6)
+	const obstaculo = new Obstaculo(image = "nada.png", position = posicionObstaculo, direccion = derecha, velocidad = 0)
+	const posicionBarrera = game.at(3, 3)
+	const barrera = new BarreraLimite(position = posicionBarrera)
+	const posicionMontable = game.at(3, 3)
+	const montable = new Montable(image = "nada.png", position = posicionMontable, velocidad = 0, direccion = izquierda)
+
+	fixture {
+		game.width(14)
+		game.height(16)
+		game.addVisual(rana1P)
+		game.addVisual(rana2P)
+		game.addVisual(obstaculo)
+		game.addVisual(barrera)
+		game.addVisual(montable)
+		rana1P.inicializarRepresentacionDeVidas()
+		rana2P.inicializarRepresentacionDeVidas()
+	}
+
+	test "Empujar a una rana sobre un obstaculo, mata a la rana empujada" {
+		const vidasIniciales = rana1P.vidas()
+		rana1P.position(posicionObstaculo.down(1))
+		rana2P.position(posicionObstaculo.down(2))
+		rana2P.tratarDeMoverseEnDireccion(arriba)
+		if (rana1P.position() == posicionObstaculo) {
+			obstaculo.colisionarConUnaRana(rana1P)
 		}
-		
-		test "Empujar a una rana sobre un obstaculo, mata a la rana empujada"{
-			const vidasIniciales = rana1P.vidas()
-			rana1P.position(posicionObstaculo.down(1))
-			rana2P.position(posicionObstaculo.down(2))
-			rana2P.tratarDeMoverseEnDireccion(arriba)
-			assert.that(rana1P.vidas() < vidasIniciales)
+		assert.that(rana1P.vidas() < vidasIniciales)
+	}
+
+	test "Tratar de empujar una rana al lado de una barrera no se puede" {
+		rana1P.position(posicionBarrera.right(1))
+		rana2P.position(posicionBarrera.right(2))
+		rana2P.tratarDeMoverseEnDireccion(izquierda)
+		assert.equals(rana1P.position(), posicionBarrera.right(1))
+		assert.equals(rana2P.position(), posicionBarrera.right(2))
+	}
+
+	test "Un montable mueve a la rana si esta colisionando con ella y moviendose" {
+		rana1P.position(posicionMontable)
+		montable.colisionarConUnaRana(rana1P)
+		montable.moverse()
+		assert.equals(rana1P.position(), posicionMontable.left(1))
+	}
+
+	test "Un montable no puede hacer que una rana atraviese una barrera" {
+		montable.position(posicionBarrera.right(1))
+		const posicionRanaInicial = montable.position()
+		rana1P.position(posicionRanaInicial)
+		montable.colisionarConUnaRana(rana1P)
+		montable.moverse()
+		if(rana1P.position() == posicionBarrera){
+			barrera.colisionarConUnaRana(rana1P)
 		}
-		
-		test "Tratar de empujar una rana al lado de una barrera no se puede"{
-			rana1P.position(posicionBarrera.right(1))
-			rana2P.position(posicionBarrera.right(2))
-			rana2P.tratarDeMoverseEnDireccion(izquierda)
-			assert.equals(rana1P.position(),posicionBarrera.right(1))
-			assert.equals(rana2P.position(),posicionBarrera.right(2))
-		}
+		assert.equals(rana1P.position(), posicionRespawn)
+	}
 	
+	test "Un movible vuelve al principio al superar el offset del tablero" {
+		const posicionBorde = game.at(0 - izquierda.limiteOffsetX(), 0)
+		const posicionDeRetorno = game.at(game.width(), 0)
+		montable.position(posicionBorde)
+		montable.moverse()
+		assert.equals(montable.position(), posicionDeRetorno)
+	}
+
 }
+
