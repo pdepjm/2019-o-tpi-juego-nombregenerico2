@@ -104,14 +104,14 @@ object generadorDelMundo {
 		game.addVisual(rana2P)
 		game.onCollideDo(rana2P, { colisionador => colisionador.colisionarConUnaRana(rana2P)})
 		game.onCollideDo(rana1P, { colisionador => colisionador.colisionarConUnaRana(rana1P)})
-		keyboard.up().onPressDo({ rana1P.tratarDeMoverseEnDireccion(arriba)})
-		keyboard.down().onPressDo({ rana1P.tratarDeMoverseEnDireccion(abajo)})
-		keyboard.right().onPressDo({ rana1P.tratarDeMoverseEnDireccion(derecha)})
-		keyboard.left().onPressDo({ rana1P.tratarDeMoverseEnDireccion(izquierda)})
-		keyboard.w().onPressDo({ rana2P.tratarDeMoverseEnDireccion(arriba)})
-		keyboard.s().onPressDo({ rana2P.tratarDeMoverseEnDireccion(abajo)})
-		keyboard.d().onPressDo({ rana2P.tratarDeMoverseEnDireccion(derecha)})
-		keyboard.a().onPressDo({ rana2P.tratarDeMoverseEnDireccion(izquierda)})
+		keyboard.up().onPressDo({ rana2P.tratarDeMoverseEnDireccion(arriba)})
+		keyboard.down().onPressDo({ rana2P.tratarDeMoverseEnDireccion(abajo)})
+		keyboard.right().onPressDo({ rana2P.tratarDeMoverseEnDireccion(derecha)})
+		keyboard.left().onPressDo({ rana2P.tratarDeMoverseEnDireccion(izquierda)})
+		keyboard.w().onPressDo({ rana1P.tratarDeMoverseEnDireccion(arriba)})
+		keyboard.s().onPressDo({ rana1P.tratarDeMoverseEnDireccion(abajo)})
+		keyboard.d().onPressDo({ rana1P.tratarDeMoverseEnDireccion(derecha)})
+		keyboard.a().onPressDo({ rana1P.tratarDeMoverseEnDireccion(izquierda)})
 		keyboard.backspace().onPressDo({ self.animacionVictoria(rana1P)}) // The secret key
 	}
 
