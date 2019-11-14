@@ -64,10 +64,6 @@ class Rana {
 		self.volverAlInicio()
 	}
 
-	/*TODO: Tiene que haber una contador visual de vidas, entonces tiene que haber un objeto que minimamente
-	 * represente visualmente las vidas. Pero si vamos a hacer un objeto de vidas, no tendriamos
-	 * que hacer ese objeto maneje las vidas en vez de la rana? Para pensar.
-	 */
 	method colisionarConUnaRana(unaRana) {
 		game.sound("croak.mp3")
 	}
@@ -187,22 +183,3 @@ class BarreraLimite {
 	}
 
 }
-
-object troncoNulo {
-
-	method moverse() {
-	}
-
-}
-
-class Tronco inherits Montable {
-
-	const proximoTronco
-
-	override method moverse() {
-		super()
-		proximoTronco.moverse()
-	}
-
-}
-

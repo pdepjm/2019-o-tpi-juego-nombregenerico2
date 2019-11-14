@@ -3,24 +3,69 @@ import actores.*
 import clasesBase.*
 import victoria.*
 
+object coordinadorDeMovimiento{
+	var todosLosMovibles = []
+	var frameActual = 1
+	
+	method adelantarFrame(){
+		const frameMaximo = 2520 //MCM del 1..10
+		if (frameActual + 1 == frameMaximo){
+			frameActual = 1
+		}
+		else{
+			frameActual++
+		}
+	}
+	
+	method intentarMoverMovible(unMovible) {
+		if(unMovible.estaEnFrameDeMovimiento(frameActual)){
+			unMovible.moverse()
+		}
+	}
+	
+	method inicializarTodosLosMovimientos(){
+		todosLosMovibles.forEach({unMovible => game.addVisual(unMovible)})
+		game.onTick(100,"pusher",
+			{
+				todosLosMovibles.forEach({unMovible => 
+					self.intentarMoverMovible(unMovible)})
+			self.adelantarFrame()
+		})
+	}
+	
+	method agregarListaDeMovibles(movibles){
+		todosLosMovibles += movibles
+	}
+	
+	method liberarMovibles(){
+		todosLosMovibles.clear()
+	}
+
+	
+}
+
 object spawner {
 
-	method spawnearTronco(posicionInicial, velocidadTronco, direccionTronco) {
+	method spawnearTronco(posicionInicial, velocidadTronco, direccionTronco) { //Velocidad es un numero del 10 al 1 de que tan rapido va
 		const imagenPrimerTronco = "tronco/" + direccionTronco.nombre() + ".png"
 		const imagenUltimoTronco = "tronco/" + direccionTronco.opuesto().nombre() + ".png"
-		const tercerTronco = new Tronco(image = imagenUltimoTronco, position = direccionTronco.posicionADistanciaDirecta(posicionInicial, -2), velocidad = 0, direccion = direccionTronco, proximoTronco = troncoNulo)
-		const segundoTronco = new Tronco(image = "tronco/body.png", position = direccionTronco.posicionADistanciaDirecta(posicionInicial, -1), velocidad = 0, direccion = direccionTronco, proximoTronco = tercerTronco)
-		const primerTronco = new Tronco(image = imagenPrimerTronco, position = posicionInicial, velocidad = velocidadTronco, direccion = direccionTronco, proximoTronco = segundoTronco)
-		[ tercerTronco, segundoTronco, primerTronco ].forEach({ tronco => game.addVisual(tronco)}) //TODO: OPTIMIZAR SEGUIMIETNOS
-		primerTronco.empezarMovimientoConstante()
+		const tercerTronco = new Montable(image = imagenUltimoTronco, position = direccionTronco.posicionADistanciaDirecta(posicionInicial, -2),frameDeMovimiento = velocidadTronco, direccion = direccionTronco)
+		const segundoTronco = new Montable(image = "tronco/body.png", position = direccionTronco.posicionADistanciaDirecta(posicionInicial, -1),frameDeMovimiento = velocidadTronco, direccion = direccionTronco)
+		const primerTronco = new Montable(image = imagenPrimerTronco, position = posicionInicial, direccion = direccionTronco,frameDeMovimiento = velocidadTronco)
+		return [primerTronco,segundoTronco,tercerTronco]
 	}
 
 	method spawnearFilaDeTroncos(cantidadTroncos, fila, velocidadTroncos, direccionTroncos, distanciaEntreTroncos) {
 		var ultimaPosicionDeTronco = game.at(0, fila)
+		var listaDeTroncos = []
 		cantidadTroncos.times({ _ =>
-			self.spawnearTronco(ultimaPosicionDeTronco, velocidadTroncos, direccionTroncos)
+			listaDeTroncos.add(self.spawnearTronco(ultimaPosicionDeTronco, velocidadTroncos, direccionTroncos))
 			ultimaPosicionDeTronco = ultimaPosicionDeTronco.right(distanciaEntreTroncos)
 		})
+		listaDeTroncos = listaDeTroncos.flatten()
+		coordinadorDeMovimiento.agregarListaDeMovibles(listaDeTroncos)
+		
+		
 	}
 
 	method spawnearFilaDeAutos(cantidadAutos, fila, velocidadAutos, direccionAutos, distanciaEntreAutos) { 
@@ -29,13 +74,10 @@ object spawner {
 		const numeroRandomDeSpriteAuto = [ 1, 2, 3, 4 ].anyOne().toString()
 		const spriteAuto = "autos/auto" + numeroRandomDeSpriteAuto + "/" + direccionAutos.nombre() + ".png"
 		cantidadAutos.times({ _ =>
-			autos.add(new Obstaculo(image = spriteAuto, position = ultimaPosicionDeAuto, velocidad = velocidadAutos, direccion = direccionAutos))
+			autos.add(new Obstaculo(image = spriteAuto, position = ultimaPosicionDeAuto, direccion = direccionAutos, frameDeMovimiento = velocidadAutos))
 			ultimaPosicionDeAuto = ultimaPosicionDeAuto.right(distanciaEntreAutos)
 		})
-		autos.forEach({ auto =>
-			game.addVisual(auto)
-			auto.empezarMovimientoConstante()
-		})
+		coordinadorDeMovimiento.agregarListaDeMovibles(autos)
 	}
 
 	method spawnearAgua() {
@@ -86,14 +128,15 @@ object generadorDelMundo {
 
 	method inicializarMundo() {
 		spawner.spawnearEscenciales()
-		spawner.spawnearFilaDeTroncos(1, 8, 300, izquierda, 0)
-		spawner.spawnearFilaDeTroncos(3, 9, 100, derecha, 6)
-		spawner.spawnearFilaDeTroncos(2, 10, 400, izquierda, 12)
-		spawner.spawnearFilaDeTroncos(1, 11, 500, derecha, 0)
-		spawner.spawnearFilaDeTroncos(1, 12, 600, izquierda, 0)
-		spawner.spawnearFilaDeAutos(3, 3, 100, derecha, 4)
-		spawner.spawnearFilaDeAutos(2, 5, 300, izquierda, 2)
-		spawner.spawnearFilaDeAutos(1, 4, 50, izquierda, 2)
+		spawner.spawnearFilaDeTroncos(1, 8, 3, izquierda, 0)
+		spawner.spawnearFilaDeTroncos(3, 9, 1, derecha, 6)
+		spawner.spawnearFilaDeTroncos(2, 10, 4, izquierda, 12)
+		spawner.spawnearFilaDeTroncos(1, 11, 5, derecha, 0)
+		spawner.spawnearFilaDeTroncos(1, 12, 6, izquierda, 0)
+		spawner.spawnearFilaDeAutos(3, 3, 1, derecha, 4)
+		spawner.spawnearFilaDeAutos(2, 5, 3, izquierda, 2)
+		spawner.spawnearFilaDeAutos(1, 4, 5, izquierda, 2)
+		coordinadorDeMovimiento.inicializarTodosLosMovimientos()
 		const rana1P = new Rana(nombreSprite = "rana", image = "rana/up.png", representacionVidas = new RepresentacionDeVidas(posicionBase = game.at(0,0),direccionVidas = derecha))
 		const rana2P = new Rana(nombreSprite = "rana2P", posicionInicial = game.at(11, 1), position = game.at(11, 1), image = "rana2P/up.png", representacionVidas = new RepresentacionDeVidas(posicionBase = game.at(13,0),direccionVidas = izquierda))
 		rana1P.inicializarRepresentacionDeVidas()
@@ -113,9 +156,11 @@ object generadorDelMundo {
 		keyboard.d().onPressDo({ rana2P.tratarDeMoverseEnDireccion(derecha)})
 		keyboard.a().onPressDo({ rana2P.tratarDeMoverseEnDireccion(izquierda)})
 		keyboard.backspace().onPressDo({ self.animacionVictoria(rana1P)}) // The secret key
+		
 	}
 
 	method reiniciarMundo() {
+		coordinadorDeMovimiento.liberarMovibles()
 		game.clear()
 		self.inicializarMundo()
 	}

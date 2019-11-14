@@ -59,17 +59,13 @@ class Movible {
 	var property image
 	var property position
 	const property limiteOffsetX = 5 // Cuantas celdas se mueve despues de dejar la pantalla
-	const velocidad // Tiempo en milisegundos que tarda en moverse de una celda a otra
 	const direccion
+	const frameDeMovimiento
 
 	method moverse() {
 		position = direccion.proximaPosicionValida(position)
 	}
-
-	method empezarMovimientoConstante() {
-		game.onTick(velocidad, "moverse movible a derecha", { self.moverse()})
-	}
-
+	method estaEnFrameDeMovimiento(frameActual) = frameActual.rem(frameDeMovimiento) == 0
 	method colisionarConUnaRana(unaRana) {
 	}
 
