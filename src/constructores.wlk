@@ -1,6 +1,7 @@
 import wollok.game.*
 import actores.*
 import clasesBase.*
+import victoria.*
 
 object spawner {
 
@@ -10,7 +11,7 @@ object spawner {
 		const tercerTronco = new Tronco(image = imagenUltimoTronco, position = direccionTronco.posicionADistanciaDirecta(posicionInicial, -2), velocidad = 0, direccion = direccionTronco, proximoTronco = troncoNulo)
 		const segundoTronco = new Tronco(image = "tronco/body.png", position = direccionTronco.posicionADistanciaDirecta(posicionInicial, -1), velocidad = 0, direccion = direccionTronco, proximoTronco = tercerTronco)
 		const primerTronco = new Tronco(image = imagenPrimerTronco, position = posicionInicial, velocidad = velocidadTronco, direccion = direccionTronco, proximoTronco = segundoTronco)
-		[ tercerTronco, segundoTronco, primerTronco ].forEach({ tronco => game.addVisual(tronco)})
+		[ tercerTronco, segundoTronco, primerTronco ].forEach({ tronco => game.addVisual(tronco)}) //TODO: OPTIMIZAR SEGUIMIETNOS
 		primerTronco.empezarMovimientoConstante()
 	}
 
@@ -22,7 +23,7 @@ object spawner {
 		})
 	}
 
-	method spawnearFilaDeAutos(cantidadAutos, fila, velocidadAutos, direccionAutos, distanciaEntreAutos) { // TODO: Los autos se desincronizan, tal vez se puede hacer como los troncos? Eso tal vez haria necesaria la clase de seguidor o algo
+	method spawnearFilaDeAutos(cantidadAutos, fila, velocidadAutos, direccionAutos, distanciaEntreAutos) { 
 		var ultimaPosicionDeAuto = game.at(0, fila)
 		const autos = []
 		const numeroRandomDeSpriteAuto = [ 1, 2, 3, 4 ].anyOne().toString()
@@ -45,22 +46,18 @@ object spawner {
 
 	method spawnearMetas() {
 		const columnas = [ 2, 5, 8, 11 ]
-		const fila = 13
+		const fila = 2
 		columnas.forEach({ columna => game.addVisual(new Meta(position = game.at(columna, fila)))})
 	}
-	
-	method spawnearBarrerasLimite(){
+
+	method spawnearBarrerasLimite() {
 		const filas = 0 .. 14
 		const columnas = -1 .. 15
-		
-		filas.forEach({fila => 
-			game.addVisual(new BarreraLimite(position = game.at(-1,fila)))
-			game.addVisual(new BarreraLimite(position = game.at(14,fila)))
-			})
-		
-		columnas.forEach({columna => game.addVisual(new BarreraLimite(position = game.at(columna,0)))})
-	
-		
+		filas.forEach({ fila =>
+			game.addVisual(new BarreraLimite(position = game.at(-1, fila)))
+			game.addVisual(new BarreraLimite(position = game.at(14, fila)))
+		})
+		columnas.forEach({ columna => game.addVisual(new BarreraLimite(position = game.at(columna, 0)))})
 	}
 
 	method spawnearEscenciales() {
@@ -68,6 +65,20 @@ object spawner {
 		self.spawnearMetas()
 		self.spawnearBarrerasLimite()
 	}
+
+}
+
+class RanaVictoriosa {
+
+	const property position
+	const property image
+
+}
+
+object fondoVictoriaTemporal {
+
+	const property position = game.at(0, 0)
+	const property image = "base de ganar.png"
 
 }
 
@@ -83,8 +94,10 @@ object generadorDelMundo {
 		spawner.spawnearFilaDeAutos(3, 3, 100, derecha, 4)
 		spawner.spawnearFilaDeAutos(2, 5, 300, izquierda, 2)
 		spawner.spawnearFilaDeAutos(1, 4, 50, izquierda, 2)
-		const rana1P = new Rana(nombreSprite = "rana",image = "rana/up.png")
-		const rana2P = new Rana(nombreSprite = "rana2P", posicionInicial = game.at(11, 1), position = game.at(11, 1),image = "rana2P/up.png")
+		const rana1P = new Rana(nombreSprite = "rana", image = "rana/up.png", representacionVidas = new RepresentacionDeVidas(posicionBase = game.at(0,0),direccionVidas = derecha))
+		const rana2P = new Rana(nombreSprite = "rana2P", posicionInicial = game.at(11, 1), position = game.at(11, 1), image = "rana2P/up.png", representacionVidas = new RepresentacionDeVidas(posicionBase = game.at(13,0),direccionVidas = izquierda))
+		rana1P.inicializarRepresentacionDeVidas()
+		rana2P.inicializarRepresentacionDeVidas()
 		controladorDeVictorias.agregarRana(rana2P)
 		controladorDeVictorias.agregarRana(rana1P)
 		game.addVisual(rana1P)
@@ -99,8 +112,7 @@ object generadorDelMundo {
 		keyboard.s().onPressDo({ rana2P.tratarDeMoverseEnDireccion(abajo)})
 		keyboard.d().onPressDo({ rana2P.tratarDeMoverseEnDireccion(derecha)})
 		keyboard.a().onPressDo({ rana2P.tratarDeMoverseEnDireccion(izquierda)})
-		keyboard.backspace().onPressDo({ self.reiniciarMundo()}) // The secret key
-		
+		keyboard.backspace().onPressDo({ self.animacionVictoria(rana1P)}) // The secret key
 	}
 
 	method reiniciarMundo() {
@@ -108,81 +120,13 @@ object generadorDelMundo {
 		self.inicializarMundo()
 	}
 
-}
-
-object victoriaEstandar{ // Hay victoria si hay una rana con suficientes puntos para ganar directo
-	method hayVictoria(){
-		return controladorDeVictorias.algunaRanaGano()
-	}
-}
-
-object victoriaPorPuntosRestantes{ // Si no quedan ranas vivas, hay alguna victoria (asumiendo que no hay empate)
-	method hayVictoria(){
-		return controladorDeVictorias.ranasVivas().size() == 0
-	}
-}
-
-
-object victoriaPorDefault{ // Si queda una rana viva y tiene mas puntos que la(s) muerta(s), hay victoria.
-	method hayVictoria(){
-		const ranasVivas = controladorDeVictorias.ranasVivas()
-		if (ranasVivas.size() == 1){
-			const unicaRanaViva = ranasVivas.anyOne()
-			return unicaRanaViva == controladorDeVictorias.ranaPuntera() // Si la rana es puntera, hay victoria. Si no, no deberia parar el juego.
-		}
-		else{
-			return false
-		}
-	}
-}
-
-object controladorDeVictorias {
-
-	const ranas = []
-	
-	const puntosNecesariosParaGanar= 3
-	
-	method ranaEsGanadoraDefinitiva(unaRana) = unaRana.puntos() >= puntosNecesariosParaGanar
-	
-	method ranaPuntera() = ranas.max({unaRana => unaRana.puntos()}) // Se asume que no hay empate
-	
-	method algunaRanaGano() = ranas.any({unaRana => self.ranaEsGanadoraDefinitiva(unaRana)})
-
-	method puntosDeRanas() = ranas.map({ unaRana => unaRana.puntos() })
-	
-	method vanEmpatando() {
-		const puntosMaximos = self.puntosDeRanas().max()
-		return self.puntosDeRanas().occurrencesOf(puntosMaximos) > 1 //Osea si la cantidad maxima de puntos aparece mas de 1 vez, es que hay 2 ranas empatando
-		//Igualmente no es como que si alguna vez van a haber mas de 2 ranas pero ok.
-	}
-
-	method ranasVivas() = ranas.filter({ unaRana => unaRana.estaViva()})
-
-	method hayAlgunaVictoria(){
-		
-		if(!self.vanEmpatando()){
-		const metodosDeVictoria = [victoriaEstandar,victoriaPorDefault,victoriaPorPuntosRestantes]
-		return metodosDeVictoria.any({unMetodo => unMetodo.hayVictoria()})
-		}
-		else{
-			return false
-		}
-
-	}
-
-	method checkearVictoria() { 
-		if(self.hayAlgunaVictoria()){
-			self.victoriaParaRanaPuntera()
-		}
-	}
-	
-	method victoriaParaRanaPuntera() {
-		self.ranaPuntera().ganarDefinitivo()
-		ranas.clear()
-	}
-
-	method agregarRana(unaRana) {
-		ranas.add(unaRana)
+	method animacionVictoria(ranaGanadora) {
+		game.clear()
+		game.addVisual(fondoVictoriaTemporal)
+		const spriteGanador = ranaGanadora.spriteMeta()
+		game.schedule(10000, { game.addVisual(new RanaVictoriosa(position = game.center(), image = spriteGanador))})
+		game.schedule(13000, { game.onTick(10, "magia random", { game.addVisual(new RanaVictoriosa(image = spriteGanador, position = game.at(0.randomUpTo(14), 0.randomUpTo(16))))})})
+		game.schedule(14500, { self.reiniciarMundo()})
 	}
 
 }
