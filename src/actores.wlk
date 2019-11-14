@@ -32,7 +32,10 @@ class Rana {
 	}
 
 	method cambiarPosicionForzado(posicion) {
-		position = posicion
+		if (self.estaViva()){
+			position = posicion	
+		}
+		
 	}
 
 	method volverAlInicio() {
