@@ -149,7 +149,7 @@ object metaOcupada {
 class Meta {
 
 	const property position
-	var property image = "tronco/body.png"
+	var property image = "nada.png"
 	var estadoOcupado = metaLibre
 
 	method colisionarConUnaRana(unaRana) {

@@ -46,7 +46,7 @@ object spawner {
 
 	method spawnearMetas() {
 		const columnas = [ 2, 5, 8, 11 ]
-		const fila = 2
+		const fila = 13
 		columnas.forEach({ columna => game.addVisual(new Meta(position = game.at(columna, fila)))})
 	}
 
