@@ -2,3 +2,36 @@ import wollok.game.*
 import actores.*
 import clasesBase.*
 
+describe "Empuje de las ranas"{
+		const rana1P = new Rana(nombreSprite = "rana", image = "rana/up.png",  representacionVidas = new RepresentacionDeVidas(posicionBase = game.at(0,0),direccionVidas = derecha))
+		const rana2P = new Rana(nombreSprite = "rana2P", image = "rana2P/up.png", representacionVidas = new RepresentacionDeVidas(posicionBase = game.at(13,0),direccionVidas = izquierda))
+		const posicionObstaculo = game.at(6,6)
+		const obstaculo = new Obstaculo(image = "nada.png", position = posicionObstaculo, direccion = derecha,frameDeMovimiento = 1)
+		const posicionBarrera = game.at(3,3)
+		const barrera = new BarreraLimite(position = posicionBarrera)
+		fixture{
+			game.addVisual(rana1P)
+			game.addVisual(rana2P)
+			game.addVisual(obstaculo)
+			game.addVisual(barrera)
+			rana1P.inicializarRepresentacionDeVidas()
+			rana2P.inicializarRepresentacionDeVidas()
+		}
+		
+		test "Empujar a una rana sobre un obstaculo, mata a la rana empujada"{
+			const vidasIniciales = rana1P.vidas()
+			rana1P.position(posicionObstaculo.down(1))
+			rana2P.position(posicionObstaculo.down(2))
+			rana2P.tratarDeMoverseEnDireccion(arriba)
+			assert.that(rana1P.vidas() < vidasIniciales)
+		}
+		
+		test "Tratar de empujar una rana al lado de una barrera no se puede"{
+			rana1P.position(posicionBarrera.right(1))
+			rana2P.position(posicionBarrera.right(2))
+			rana2P.tratarDeMoverseEnDireccion(izquierda)
+			assert.equals(rana1P.position(),posicionBarrera.right(1))
+			assert.equals(rana2P.position(),posicionBarrera.right(2))
+		}
+	
+}
