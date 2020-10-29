@@ -35,6 +35,7 @@ describe "Empuje de las ranas" {
 			obstaculo.colisionarConUnaRana(rana1P)
 		}
 		assert.that(rana1P.vidas() < vidasIniciales)
+		assert.throwsException({1/0})
 	}
 
 	test "Tratar de empujar una rana al lado de una barrera no se puede" {

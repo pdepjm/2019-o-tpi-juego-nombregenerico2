@@ -3,8 +3,7 @@ import actores.*
 import clasesBase.*
 import constructores.*
 
-
-program game {
+program frogger {
 	// Resolucion 700x800 con celdas de 50p
 	game.width(14)
 	game.height(16)

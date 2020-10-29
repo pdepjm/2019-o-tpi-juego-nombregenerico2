@@ -44,7 +44,7 @@ class Rana {
 	}
 
 	method morir() {
-		vidas--
+		vidas -= 1
 		if (vidas > 0) {
 			representacionVidas.perderVida()
 			self.volverAlInicio()
@@ -62,7 +62,7 @@ class Rana {
 	method estaViva() = vidas > 0
 
 	method ganar() {
-		puntos++
+		puntos += 1
 		controladorDeVictorias.checkearVictoria()
 		self.volverAlInicio()
 	}
